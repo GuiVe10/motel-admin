@@ -421,14 +421,14 @@ function getFilteredCierres(){
 
   return ALL_CIERRES.filter(c=>{
     const f = c['Fecha']||'';
-    if(PERIOD==='hoy') return f===todayStr;
+    if(PERIOD==='hoy') return f.slice(0,10)===todayStr;
     if(PERIOD==='semana'){
-      const d=new Date(f+'T12:00:00');
+      const d=new Date(f.slice(0,10)+'T12:00:00');
       const diff=(now-d)/(1000*60*60*24);
       return diff>=0&&diff<7;
     }
     if(PERIOD==='mes'){
-      return f.startsWith(todayStr.slice(0,7));
+      return f.slice(0,7)===todayStr.slice(0,7);
     }
     if(PERIOD==='custom'){
       const from=document.getElementById('date-from').value;
@@ -492,7 +492,7 @@ function renderBalance(){
         :'—';
 
       return`<tr>
-        <td class="td-mono">${c['Fecha']||''}</td>
+        <td class="td-mono">${(c['Fecha']||'').slice(0,10)}</td>
         <td>${c['Operador']||''}</td>
         <td><span class="turno-badge ${tbClass}">${turno}</span></td>
         <td class="td-mono" style="text-align:center;">${c['Clientes']||0}</td>
