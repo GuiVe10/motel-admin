@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Motel — Administración</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#1c1e22;--s1:#242628;--s2:#2c2e32;--s3:#34363b;
+  --border:#3a3c42;--border2:#484c54;
+  --text:#e8e6e1;--muted:#6e6c66;--muted2:#9a9890;
+  --acc:#c8b89a;--acc2:#e2d4bc;
+  --acc-bg:rgba(200,184,154,.08);--acc-border:rgba(200,184,154,.22);
+  --green:#4caf7a;--green-bg:#192b21;--green-b:#234d33;
+  --red:#d95f5f;--red-bg:#2b1818;--red-b:#4d2828;
+  --yellow:#d4a030;--yellow-bg:#2a2010;
+  --cash:#5cb88a;--transf:#7090c0;
+  --esp:#b8906a;--esp-bg:rgba(184,144,106,.1);--esp-border:rgba(184,144,106,.3);
+  --sim:#8098b0;--sim-bg:rgba(128,152,176,.1);--sim-border:rgba(128,152,176,.3);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;}
+
+/* PIN SCREEN */
+#pin-screen{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:100vh;gap:20px;
+}
+.pin-logo{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:4px;color:var(--acc2);}
+.pin-sub{font-size:13px;color:var(--muted);margin-top:-14px;}
+.pin-display{
+  font-family:'DM Mono',monospace;font-size:36px;letter-spacing:12px;
+  text-align:center;padding:16px 24px;color:var(--acc2);
+  background:var(--s2);border:1px solid var(--border);border-radius:12px;
+  min-width:200px;min-height:72px;
+}
+.numpad{display:grid;grid-template-columns:repeat(3,72px);gap:10px;}
+.npbtn{
+  background:var(--s2);border:1px solid var(--border);border-radius:10px;
+  padding:18px;font-size:20px;font-family:'DM Mono',monospace;
+  cursor:pointer;text-align:center;color:var(--text);transition:all .15s;
+}
+.npbtn:hover{background:var(--s3);border-color:var(--border2);}
+.npbtn:active{transform:scale(.95);}
+.npbtn-del{font-size:16px;color:var(--muted2);}
+.npbtn-ok{background:var(--acc);color:#1c1a16;font-weight:700;border-color:var(--acc);}
+.npbtn-ok:hover{background:var(--acc2);}
+.pin-err{font-size:13px;color:var(--red);min-height:20px;text-align:center;}
+
+/* APP */
+#app{display:none;}
+header{
+  height:54px;background:var(--s1);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;padding:0 24px;
+}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:var(--acc2);}
+.logo em{color:var(--muted);font-style:normal;font-size:12px;letter-spacing:1px;margin-left:8px;font-family:'DM Sans',sans-serif;font-weight:300;}
+.htabs{display:flex;gap:4px;}
+.htab{padding:7px 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;background:transparent;color:var(--muted2);}
+.htab:hover{color:var(--text);}
+.htab.active{background:var(--acc);color:#1c1a16;}
+
+.page{display:none;padding:24px;max-width:1100px;margin:0 auto;}
+.page.active{display:block;}
+
+/* ── BALANCE ── */
+.bal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
+.bal-title{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;color:var(--acc2);}
+.sync-btn{background:var(--s2);border:1px solid var(--border);color:var(--muted2);border-radius:8px;padding:8px 14px;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s;}
+.sync-btn:hover{color:var(--text);border-color:var(--border2);}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green);}
+.sync-dot.pending{background:var(--yellow);}
+
+/* Resumen cards */
+.resumen-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+.rcard{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
+.rcard .rl{font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;}
+.rcard .rv{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;}
+.rcard .rs{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:2px;}
+.rc-total .rv{color:var(--acc);}
+.rc-cash .rv{color:var(--cash);}
+.rc-transf .rv{color:var(--transf);}
+.rc-net .rv{color:var(--green);}
+
+/* Filtros período */
+.periodo-bar{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;align-items:center;}
+.pbtn{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--s2);color:var(--muted2);transition:all .15s;}
+.pbtn:hover{color:var(--text);border-color:var(--border2);}
+.pbtn.active{background:var(--acc);color:#1c1a16;border-color:var(--acc);}
+.period-dates{display:flex;gap:6px;align-items:center;}
+.period-dates input{background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:5px 8px;font-size:12px;font-family:'DM Mono',monospace;outline:none;}
+.period-dates input:focus{border-color:var(--acc);}
+
+/* Meses desplegables */
+.mes-block{background:var(--s2);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden;}
+.mes-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;cursor:pointer;transition:background .15s;user-select:none;
+}
+.mes-header:hover{background:var(--s3);}
+.mes-nombre{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:2px;color:var(--acc2);}
+.mes-stats{display:flex;gap:20px;align-items:center;}
+.mes-stat{text-align:right;}
+.mes-stat .lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+.mes-stat .val{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;}
+.mes-arrow{color:var(--muted);font-size:12px;transition:transform .2s;}
+.mes-arrow.open{transform:rotate(90deg);}
+.mes-body{display:none;border-top:1px solid var(--border);}
+.mes-body.open{display:block;}
+
+/* Tabla cierres */
+.cierre-table{width:100%;border-collapse:collapse;}
+.cierre-table th{
+  text-align:left;padding:8px 14px;font-size:10px;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);
+  border-bottom:1px solid var(--border);
+}
+.cierre-table td{
+  padding:10px 14px;font-size:13px;border-bottom:1px solid rgba(255,255,255,.04);
+}
+.cierre-table tr:last-child td{border:none;}
+.cierre-table tr:hover td{background:rgba(255,255,255,.02);}
+.td-mono{font-family:'DM Mono',monospace;}
+.td-cash{color:var(--cash);font-family:'DM Mono',monospace;}
+.td-transf{color:var(--transf);font-family:'DM Mono',monospace;}
+.td-egr{color:var(--red);font-family:'DM Mono',monospace;}
+.td-sobre{color:var(--acc);font-family:'DM Mono',monospace;font-weight:600;}
+.turno-badge{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700;letter-spacing:.5px;}
+.tb-m{background:rgba(200,184,154,.1);color:var(--acc);}
+.tb-t{background:rgba(112,144,192,.1);color:var(--transf);}
+.tb-n{background:rgba(76,175,122,.1);color:var(--green);}
+
+/* detalle egresos expandible */
+.egr-expand{font-size:11px;color:var(--muted);cursor:pointer;text-decoration:underline;text-decoration-style:dotted;}
+.egr-detail{display:none;margin-top:4px;padding:6px 10px;background:rgba(217,95,95,.05);border-radius:6px;font-size:11px;color:var(--muted2);}
+.egr-detail.open{display:block;}
+
+.empty-state{text-align:center;padding:40px;color:var(--muted);font-size:14px;}
+
+/* ── CONFIG ── */
+.cfg-section{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;}
+.cfg-section-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--acc2);margin-bottom:16px;}
+.price-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.price-cat-block{background:var(--bg);border-radius:10px;padding:14px;border:1px solid var(--border);}
+.price-cat-block.esp-block{border-color:var(--esp-border);}
+.price-cat-block.sim-block{border-color:var(--sim-border);}
+.price-cat-title{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;}
+.esp-block .price-cat-title{color:var(--esp);}
+.sim-block .price-cat-title{color:var(--sim);}
+.cfg-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.cfg-row:last-child{margin-bottom:0;}
+.cfg-row label{font-size:13px;color:var(--text);flex:1;}
+.cfg-inp{width:120px;background:var(--s2);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--text);font-size:13px;font-family:'DM Mono',monospace;outline:none;}
+.cfg-inp:focus{border-color:var(--acc);}
+
+.room-assign-grid{display:grid;grid-template-columns:repeat(9,1fr);gap:8px;margin-bottom:6px;}
+.ra-cell{background:var(--s2);border:1.5px solid var(--border);border-radius:8px;padding:10px 4px;text-align:center;cursor:pointer;transition:all .15s;}
+.ra-cell:hover{border-color:var(--border2);}
+.ra-num{font-family:'Bebas Neue',sans-serif;font-size:22px;line-height:1;color:var(--muted2);}
+.ra-label{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-top:3px;}
+.ra-cell.is-esp{background:var(--esp-bg);border-color:var(--esp-border);}
+.ra-cell.is-esp .ra-num{color:var(--esp);}
+.ra-cell.is-esp .ra-label{color:var(--esp);}
+.ra-cell.is-sim{background:var(--sim-bg);border-color:var(--sim-border);}
+.ra-cell.is-sim .ra-num{color:var(--sim);}
+.ra-cell.is-sim .ra-label{color:var(--sim);}
+.ra-hint{font-size:11px;color:var(--muted);margin-top:4px;}
+
+.menu-edit-row{display:grid;grid-template-columns:1fr 110px 32px;gap:6px;margin-bottom:6px;align-items:center;}
+.me-inp{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:7px 9px;color:var(--text);font-size:12px;outline:none;width:100%;}
+.me-inp:focus{border-color:var(--acc);}
+.me-del{background:var(--s3);border:1px solid var(--border);color:var(--muted);border-radius:6px;cursor:pointer;font-size:12px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.me-del:hover{color:var(--red);border-color:var(--red);}
+.add-mi{background:var(--s3);border:1px dashed var(--border);color:var(--muted2);border-radius:8px;padding:7px;font-size:12px;width:100%;cursor:pointer;margin-top:4px;transition:all .15s;}
+.add-mi:hover{border-color:var(--acc);color:var(--acc);}
+
+.btn-acc{background:var(--acc);color:#1c1a16;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;}
+.btn-acc:hover{background:var(--acc2);}
+.btn-ghost{background:var(--s3);color:var(--muted2);border:1px solid var(--border);border-radius:8px;padding:10px 20px;font-size:13px;cursor:pointer;transition:all .15s;}
+.btn-ghost:hover{color:var(--text);border-color:var(--border2);}
+.save-ok{font-size:12px;color:var(--green);margin-left:10px;display:none;}
+.save-ok.show{display:inline;}
+
+.toast{position:fixed;bottom:18px;right:18px;background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:10px 15px;font-size:13px;box-shadow:0 8px 30px rgba(0,0,0,.5);z-index:600;transform:translateY(60px);opacity:0;transition:all .3s;max-width:260px;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.tg{border-color:var(--green);color:var(--green);}
+.toast.ty{border-color:var(--yellow);color:var(--yellow);}
+.toast.ta{border-color:var(--acc);color:var(--acc);}
+</style>
+</head>
+<body>
+
+<!-- ── PIN SCREEN ── -->
+<div id="pin-screen">
+  <div class="pin-logo">MOTEL</div>
+  <div class="pin-sub">Administración — ingresá la clave</div>
+  <div class="pin-display" id="pin-display">_ _ _ _</div>
+  <div class="numpad">
+    <button class="npbtn" onclick="pinPress('1')">1</button>
+    <button class="npbtn" onclick="pinPress('2')">2</button>
+    <button class="npbtn" onclick="pinPress('3')">3</button>
+    <button class="npbtn" onclick="pinPress('4')">4</button>
+    <button class="npbtn" onclick="pinPress('5')">5</button>
+    <button class="npbtn" onclick="pinPress('6')">6</button>
+    <button class="npbtn" onclick="pinPress('7')">7</button>
+    <button class="npbtn" onclick="pinPress('8')">8</button>
+    <button class="npbtn" onclick="pinPress('9')">9</button>
+    <button class="npbtn npbtn-del" onclick="pinDel()">⌫</button>
+    <button class="npbtn" onclick="pinPress('0')">0</button>
+    <button class="npbtn npbtn-ok" onclick="pinOk()">OK</button>
+  </div>
+  <div class="pin-err" id="pin-err"></div>
+</div>
+
+<!-- ── APP ── -->
+<div id="app">
+  <header>
+    <div class="logo">MOTEL<em>Administración</em></div>
+    <div class="htabs">
+      <button class="htab active" id="htab-balance" onclick="showPage('balance')">Balance</button>
+      <button class="htab" id="htab-config" onclick="showPage('config')">Config.</button>
+    </div>
+  </header>
+
+  <!-- BALANCE -->
+  <div class="page active" id="page-balance">
+    <div class="bal-header">
+      <div class="bal-title">Balance</div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <div id="pending-notice" style="display:none;font-size:12px;color:var(--yellow);">⚠ Hay cierres offline pendientes</div>
+        <button class="sync-btn" onclick="syncPendientes()">
+          <span class="sync-dot" id="sync-dot"></span>
+          <span id="sync-lbl">Sincronizar pendientes</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Resumen totales del período -->
+    <div class="resumen-grid">
+      <div class="rcard rc-total"><div class="rl">Total recaudado</div><div class="rv" id="res-total">$0</div><div class="rs" id="res-period">—</div></div>
+      <div class="rcard rc-cash"><div class="rl">Efectivo</div><div class="rv" id="res-cash">$0</div></div>
+      <div class="rcard rc-transf"><div class="rl">Transferencia</div><div class="rv" id="res-transf">$0</div></div>
+      <div class="rcard rc-net"><div class="rl">Neto (−egresos)</div><div class="rv" id="res-net">$0</div></div>
+    </div>
+
+    <!-- Filtros período -->
+    <div class="periodo-bar">
+      <button class="pbtn active" id="pb-hoy" onclick="setPeriod('hoy')">Hoy</button>
+      <button class="pbtn" id="pb-semana" onclick="setPeriod('semana')">Esta semana</button>
+      <button class="pbtn" id="pb-mes" onclick="setPeriod('mes')">Este mes</button>
+      <button class="pbtn" id="pb-custom" onclick="setPeriod('custom')">Personalizado</button>
+      <div class="period-dates" id="custom-dates" style="display:none;">
+        <input type="date" id="date-from">
+        <span style="color:var(--muted);">→</span>
+        <input type="date" id="date-to">
+        <button class="pbtn" onclick="applyCustom()">Aplicar</button>
+      </div>
+    </div>
+
+    <!-- Cierres agrupados por mes -->
+    <div id="meses-container"><div class="empty-state">Cargando datos...</div></div>
+  </div>
+
+  <!-- CONFIG -->
+  <div class="page" id="page-config">
+
+    <!-- Tarifas -->
+    <div class="cfg-section">
+      <div class="cfg-section-title">Tarifas por Categoría</div>
+      <div class="price-grid">
+        <div class="price-cat-block esp-block">
+          <div class="price-cat-title">★ Especial</div>
+          <div class="cfg-row"><label>Precio base (primeras 2 hs)</label><input type="number" id="cfg-esp-base" class="cfg-inp"></div>
+          <div class="cfg-row"><label>Adicional cada 30 min</label><input type="number" id="cfg-esp-extra" class="cfg-inp"></div>
+        </div>
+        <div class="price-cat-block sim-block">
+          <div class="price-cat-title">◇ Simple</div>
+          <div class="cfg-row"><label>Precio base (primeras 2 hs)</label><input type="number" id="cfg-sim-base" class="cfg-inp"></div>
+          <div class="cfg-row"><label>Adicional cada 30 min</label><input type="number" id="cfg-sim-extra" class="cfg-inp"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Categoría por habitación -->
+    <div class="cfg-section">
+      <div class="cfg-section-title">Categoría por Habitación</div>
+      <div class="room-assign-grid" id="room-assign-grid"></div>
+      <div class="ra-hint">Tocá para alternar entre ★ Especial y ◇ Simple</div>
+    </div>
+
+    <!-- Menú de consumos -->
+    <div class="cfg-section">
+      <div class="cfg-section-title">Menú de Consumos</div>
+      <div id="menu-edit" style="max-height:320px;overflow-y:auto;padding-right:4px;"></div>
+      <button class="add-mi" onclick="addMI()">+ Agregar ítem</button>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:12px;margin-top:4px;">
+      <button class="btn-acc" onclick="saveCfg()">Guardar Configuración</button>
+      <span class="save-ok" id="save-ok">✓ Guardado</span>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw6zyOhiDl04P0mjrQF4ZfEgfET1B7lB0jOO5QJ4FHmCT2joKQWnXhO0KYuTXDU6tTmgw/exec';
+
+// ══ PIN ══
+let _pinBuf = '';
+function pinPress(d){if(_pinBuf.length>=8)return;_pinBuf+=d;updatePinDisplay();}
+function pinDel(){_pinBuf=_pinBuf.slice(0,-1);updatePinDisplay();}
+function updatePinDisplay(){
+  const el=document.getElementById('pin-display');
+  el.textContent=_pinBuf?'●'.repeat(_pinBuf.length):'_ _ _ _';
+}
+function pinOk(){
+  if(_pinBuf==='9818'){
+    document.getElementById('pin-screen').style.display='none';
+    document.getElementById('app').style.display='block';
+    initApp();
+  } else {
+    document.getElementById('pin-err').textContent='Clave incorrecta';
+    _pinBuf='';updatePinDisplay();
+    setTimeout(()=>{document.getElementById('pin-err').textContent='';},2000);
+  }
+}
+document.addEventListener('keydown',e=>{
+  if(document.getElementById('pin-screen').style.display!=='none'){
+    if(e.key>='0'&&e.key<='9')pinPress(e.key);
+    else if(e.key==='Backspace')pinDel();
+    else if(e.key==='Enter')pinOk();
+  }
+});
+
+// ══ API ══
+async function api(action, data={}){
+  try{
+    const res=await fetch(SCRIPT_URL,{method:'POST',redirect:'follow',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action,...data})});
+    return await res.json();
+  }catch(e){return{ok:false,error:e.toString()};}
+}
+
+// ══ STATE ══
+let ALL_CIERRES = [];
+let CFG = {
+  prices:{esp:{base:6000,extra:2000},sim:{base:5000,extra:1500}},
+  cats:{1:'sim',2:'sim',3:'esp',4:'esp',5:'esp',9:'esp',10:'esp',11:'sim',12:'sim'},
+  menu:[],
+};
+let PERIOD = 'hoy';
+let PENDING = [];
+
+async function initApp(){
+  // cargar pendientes offline del localStorage
+  try{const p=localStorage.getItem('motel_pending');if(p)PENDING=JSON.parse(p);}catch(e){}
+  if(PENDING.length>0){
+    document.getElementById('pending-notice').style.display='block';
+    document.getElementById('sync-dot').className='sync-dot pending';
+  }
+
+  // cargar config
+  const cfgRes = await api('getConfig');
+  if(cfgRes.ok && cfgRes.prices){
+    CFG.prices = cfgRes.prices;
+    CFG.cats = cfgRes.cats || CFG.cats;
+    CFG.menu = cfgRes.menu || CFG.menu;
+    populateCfgForm();
+    renderRoomAssign();
+    renderMenuEdit();
+  } else {
+    // fallback: mostrar valores por defecto igual
+    populateCfgForm();
+    renderRoomAssign();
+    renderMenuEdit();
+    toast('No se pudo cargar config del servidor','ty');
+  }
+
+  // cargar cierres
+  await loadCierres();
+  // verificar pendientes en el servidor
+  await checkPendientes();
+}
+
+async function loadCierres(){
+  const res = await api('getCierres');
+  if(res.ok){
+    ALL_CIERRES = res.cierres;
+    renderBalance();
+  } else {
+    document.getElementById('meses-container').innerHTML='<div class="empty-state">Error al cargar datos. Verificá la conexión.</div>';
+  }
+}
+
+// ══ TABS ══
+function showPage(p){
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.htab').forEach(el=>el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.getElementById('htab-'+p).classList.add('active');
+}
+
+// ══ BALANCE ══
+function setPeriod(p){
+  PERIOD=p;
+  document.querySelectorAll('.pbtn[id^="pb-"]').forEach(b=>b.classList.remove('active'));
+  document.getElementById('pb-'+p).classList.add('active');
+  document.getElementById('custom-dates').style.display=p==='custom'?'flex':'none';
+  if(p!=='custom') renderBalance();
+}
+function applyCustom(){PERIOD='custom';renderBalance();}
+
+function getFilteredCierres(){
+  const now = new Date();
+  const todayStr = now.toISOString().split('T')[0];
+
+  return ALL_CIERRES.filter(c=>{
+    const f = c['Fecha']||'';
+    if(PERIOD==='hoy') return f===todayStr;
+    if(PERIOD==='semana'){
+      const d=new Date(f+'T12:00:00');
+      const diff=(now-d)/(1000*60*60*24);
+      return diff>=0&&diff<7;
+    }
+    if(PERIOD==='mes'){
+      return f.startsWith(todayStr.slice(0,7));
+    }
+    if(PERIOD==='custom'){
+      const from=document.getElementById('date-from').value;
+      const to=document.getElementById('date-to').value;
+      if(!from||!to) return true;
+      return f>=from&&f<=to;
+    }
+    return true;
+  });
+}
+
+function renderBalance(){
+  const filtered = getFilteredCierres();
+
+  // totales
+  const totalCash = filtered.reduce((a,c)=>a+Number(c['Efectivo']||0),0);
+  const totalTransf = filtered.reduce((a,c)=>a+Number(c['Transferencia']||0),0);
+  const totalEgr = filtered.reduce((a,c)=>a+Number(c['Egresos']||0),0);
+  const total = totalCash+totalTransf;
+  const neto = total-totalEgr;
+
+  const pLabels={hoy:'Hoy',semana:'Esta semana',mes:'Este mes',custom:'Período personalizado'};
+  document.getElementById('res-total').textContent='$'+total.toLocaleString('es-AR');
+  document.getElementById('res-cash').textContent='$'+totalCash.toLocaleString('es-AR');
+  document.getElementById('res-transf').textContent='$'+totalTransf.toLocaleString('es-AR');
+  document.getElementById('res-net').textContent='$'+neto.toLocaleString('es-AR');
+  document.getElementById('res-period').textContent=pLabels[PERIOD]||'';
+
+  // agrupar por mes
+  const mesesMap = {};
+  filtered.forEach(c=>{
+    const f=c['Fecha']||'';
+    const mesKey=f.slice(0,7); // YYYY-MM
+    if(!mesesMap[mesKey]) mesesMap[mesKey]=[];
+    mesesMap[mesKey].push(c);
+  });
+
+  const cont = document.getElementById('meses-container');
+  if(filtered.length===0){cont.innerHTML='<div class="empty-state">No hay cierres en este período</div>';return;}
+
+  cont.innerHTML = Object.keys(mesesMap).sort().reverse().map(mk=>{
+    const cierres=mesesMap[mk];
+    const mCash=cierres.reduce((a,c)=>a+Number(c['Efectivo']||0),0);
+    const mTransf=cierres.reduce((a,c)=>a+Number(c['Transferencia']||0),0);
+    const mEgr=cierres.reduce((a,c)=>a+Number(c['Egresos']||0),0);
+    const mTotal=mCash+mTransf;
+    const [y,m]=mk.split('-');
+    const meses=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    const mesNombre=meses[parseInt(m)-1]+' '+y;
+
+    const rows = cierres.map((c,i)=>{
+      const turno=c['Turno']||'';
+      const tbClass=turno==='Mañana'?'tb-m':turno==='Tarde'?'tb-t':'tb-n';
+      const egresos=c['Detalle Egresos']||[];
+      const egrStr=Array.isArray(egresos)&&egresos.length>0
+        ?egresos.map(e=>`${e.concepto}: $${Number(e.monto).toLocaleString('es-AR')}`).join(' · ')
+        :'—';
+      const egrCell=Array.isArray(egresos)&&egresos.length>0
+        ?`<span class="egr-expand" onclick="toggleEgr('egr-${mk}-${i}')">ver detalle</span>
+           <div class="egr-detail" id="egr-${mk}-${i}">${egrStr}</div>`
+        :'—';
+
+      return`<tr>
+        <td class="td-mono">${c['Fecha']||''}</td>
+        <td>${c['Operador']||''}</td>
+        <td><span class="turno-badge ${tbClass}">${turno}</span></td>
+        <td class="td-mono" style="text-align:center;">${c['Clientes']||0}</td>
+        <td class="td-cash">$${Number(c['Efectivo']||0).toLocaleString('es-AR')}</td>
+        <td class="td-transf">$${Number(c['Transferencia']||0).toLocaleString('es-AR')}</td>
+        <td class="td-egr">${Number(c['Egresos']||0)>0?'−$'+Number(c['Egresos']||0).toLocaleString('es-AR'):'—'}</td>
+        <td class="td-sobre">$${Number(c['Sobre']||0).toLocaleString('es-AR')}</td>
+        <td style="font-size:12px;">${egrCell}</td>
+      </tr>`;
+    }).join('');
+
+    return`<div class="mes-block">
+      <div class="mes-header" onclick="toggleMes('mes-${mk}')">
+        <div class="mes-nombre">${mesNombre}</div>
+        <div style="display:flex;align-items:center;gap:20px;">
+          <div class="mes-stats">
+            <div class="mes-stat"><div class="lbl">Total</div><div class="val" style="color:var(--acc)">$${mTotal.toLocaleString('es-AR')}</div></div>
+            <div class="mes-stat"><div class="lbl">Efectivo</div><div class="val" style="color:var(--cash)">$${mCash.toLocaleString('es-AR')}</div></div>
+            <div class="mes-stat"><div class="lbl">Transfer.</div><div class="val" style="color:var(--transf)">$${mTransf.toLocaleString('es-AR')}</div></div>
+            <div class="mes-stat"><div class="lbl">Cierres</div><div class="val">${cierres.length}</div></div>
+          </div>
+          <span class="mes-arrow" id="arr-mes-${mk}">▶</span>
+        </div>
+      </div>
+      <div class="mes-body" id="mes-${mk}">
+        <div style="overflow-x:auto;">
+          <table class="cierre-table">
+            <thead><tr>
+              <th>Fecha</th><th>Operador</th><th>Turno</th><th>Clientes</th>
+              <th>Efectivo</th><th>Transfer.</th><th>Egresos</th><th>Sobre</th><th>Detalle egresos</th>
+            </tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // auto-abrir el primer mes si es hoy/semana
+  if(PERIOD==='hoy'||PERIOD==='semana'){
+    const firstKey=Object.keys(mesesMap).sort().reverse()[0];
+    if(firstKey) toggleMes('mes-'+firstKey);
+  }
+}
+
+function toggleMes(id){
+  const body=document.getElementById(id);
+  const arr=document.getElementById('arr-'+id);
+  const isOpen=body.classList.contains('open');
+  body.classList.toggle('open');
+  if(arr)arr.classList.toggle('open',!isOpen);
+}
+function toggleEgr(id){document.getElementById(id).classList.toggle('open');}
+
+// ══ SYNC PENDIENTES ══
+async function checkPendientes(){
+  // verificar pendientes en el servidor
+  const res=await api('getPendientes');
+  const serverCount=res.ok?res.count:0;
+  // los pendientes del localStorage están en PENDING (cargados en initApp)
+  const total=serverCount+PENDING.length;
+  if(total>0){
+    document.getElementById('pending-notice').style.display='block';
+    document.getElementById('pending-notice').textContent='⚠ '+total+' cierre(s) pendiente(s) de sincronizar';
+    document.getElementById('sync-dot').className='sync-dot pending';
+  }
+}
+async function syncPendientes(){
+  document.getElementById('sync-lbl').textContent='Sincronizando...';
+  let saved=0;
+  // sincronizar pendientes del localStorage
+  if(PENDING.length>0){
+    const aEnviar=[...PENDING];
+    for(const cierre of aEnviar){
+      const res=await api('saveCierre',{data:cierre});
+      if(res.ok){
+        PENDING=PENDING.filter(p=>p.fechaCierre!==cierre.fechaCierre);
+        saved++;
+      }
+    }
+    try{localStorage.setItem('motel_pending',JSON.stringify(PENDING));}catch(e){}
+  }
+  // sincronizar pendientes del servidor
+  const res=await api('syncPendientes');
+  if(res.ok) saved+=res.saved;
+  document.getElementById('sync-lbl').textContent='Sincronizar pendientes';
+  if(saved>0){
+    document.getElementById('pending-notice').style.display='none';
+    document.getElementById('sync-dot').className='sync-dot';
+    toast(saved+' cierre(s) sincronizado(s)','tg');
+    await loadCierres();
+  } else {
+    toast('No había pendientes','ta');
+  }
+}
+
+// ══ CONFIG ══
+function populateCfgForm(){
+  document.getElementById('cfg-esp-base').value=CFG.prices.esp.base;
+  document.getElementById('cfg-esp-extra').value=CFG.prices.esp.extra;
+  document.getElementById('cfg-sim-base').value=CFG.prices.sim.base;
+  document.getElementById('cfg-sim-extra').value=CFG.prices.sim.extra;
+}
+
+function renderRoomAssign(){
+  const g=document.getElementById('room-assign-grid');g.innerHTML='';
+  const rooms=[1,2,3,4,5,9,10,11,12];
+  rooms.forEach(id=>{
+    const cat=CFG.cats[id]||'sim';
+    const el=document.createElement('div');
+    el.className='ra-cell is-'+cat;
+    el.onclick=()=>toggleCat(id);
+    el.innerHTML=`<div class="ra-num">${id}</div><div class="ra-label">${cat==='esp'?'Especial':'Simple'}</div>`;
+    g.appendChild(el);
+  });
+}
+function toggleCat(id){
+  CFG.cats[id]=CFG.cats[id]==='esp'?'sim':'esp';
+  renderRoomAssign();
+}
+
+function renderMenuEdit(){
+  document.getElementById('menu-edit').innerHTML=(CFG.menu||[]).map((item,i)=>`
+    <div class="menu-edit-row">
+      <input class="me-inp" type="text" value="${(item.name||'').replace(/"/g,'&quot;')}" oninput="CFG.menu[${i}].name=this.value">
+      <input class="me-inp" type="number" value="${item.price||0}" oninput="CFG.menu[${i}].price=parseInt(this.value)||0">
+      <button class="me-del" onclick="delMI(${i})">✕</button>
+    </div>`).join('');
+}
+function addMI(){if(!CFG.menu)CFG.menu=[];CFG.menu.push({name:'Nuevo ítem',price:0});renderMenuEdit();}
+function delMI(i){CFG.menu.splice(i,1);renderMenuEdit();}
+
+async function saveCfg(){
+  // leer valores frescos de los inputs — no depende de CFG.prices
+  if(!CFG.prices) CFG.prices={esp:{base:0,extra:0},sim:{base:0,extra:0}};
+  if(!CFG.prices.esp) CFG.prices.esp={base:0,extra:0};
+  if(!CFG.prices.sim) CFG.prices.sim={base:0,extra:0};
+  CFG.prices.esp.base=parseInt(document.getElementById('cfg-esp-base').value)||0;
+  CFG.prices.esp.extra=parseInt(document.getElementById('cfg-esp-extra').value)||0;
+  CFG.prices.sim.base=parseInt(document.getElementById('cfg-sim-base').value)||0;
+  CFG.prices.sim.extra=parseInt(document.getElementById('cfg-sim-extra').value)||0;
+  if(!CFG.cats) CFG.cats={1:'sim',2:'sim',3:'esp',4:'esp',5:'esp',9:'esp',10:'esp',11:'sim',12:'sim'};
+  if(!CFG.menu) CFG.menu=[];
+
+  const res=await api('saveConfig',{data:{
+    prices:CFG.prices,cats:CFG.cats,menu:CFG.menu
+  }});
+  if(res.ok){
+    const ok=document.getElementById('save-ok');
+    ok.classList.add('show');setTimeout(()=>ok.classList.remove('show'),3000);
+    toast('Configuración guardada — el panel la leerá en el próximo inicio','tg');
+  } else {
+    toast('Error al guardar: '+res.error,'ty');
+  }
+}
+
+// ══ HELPERS ══
+let _tt;
+function toast(msg,cls='tg'){const el=document.getElementById('toast');el.textContent=msg;el.className='toast '+cls+' show';clearTimeout(_tt);_tt=setTimeout(()=>{el.className='toast';},3200);}
+</script>
+</body>
+</html>
