@@ -203,6 +203,23 @@ html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'DM
 .toast.ty{border-color:var(--yellow);color:var(--yellow);}
 .toast.ta{border-color:var(--acc);color:var(--acc);}
 .empty{text-align:center;padding:30px;color:var(--muted);font-size:14px;}
+/* CATEGORIA BREAKDOWN */
+.cat-bar{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.cat-name{font-size:12px;color:var(--text);width:130px;flex-shrink:0;}
+.cat-track{flex:1;height:8px;background:var(--s3);border-radius:4px;overflow:hidden;}
+.cat-fill{height:100%;border-radius:4px;transition:width .4s;}
+.cat-pct{font-size:11px;font-family:'DM Mono',monospace;color:var(--muted2);width:40px;text-align:right;}
+.cat-monto{font-size:11px;font-family:'DM Mono',monospace;color:var(--red);width:90px;text-align:right;}
+/* EMPLEADO CARD */
+.emp-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:14px;}
+.emp-avatar{width:36px;height:36px;border-radius:50%;background:var(--acc-bg);border:1px solid var(--acc-border);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--acc);flex-shrink:0;}
+.emp-name{font-weight:600;font-size:13px;}
+.emp-stats{margin-left:auto;display:flex;gap:18px;}
+.emp-stat .el{font-size:10px;color:var(--muted);text-align:right;}
+.emp-stat .ev{font-family:'DM Mono',monospace;font-size:13px;text-align:right;}
+/* EDIT EGRESO INLINE */
+.egr-edit-form{background:var(--bg);border:1px solid var(--acc-border);border-radius:8px;padding:10px;margin-top:4px;display:none;}
+.egr-edit-form.open{display:block;}
 </style>
 </head>
 <body>
@@ -377,14 +394,16 @@ html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'DM
 
       <!-- ══ EGRESOS ══ -->
       <div class="page" id="page-egresos">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:22px;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
           <div>
             <div class="pg-title">Egresos</div>
-            <div class="pg-sub">Egresos automáticos del Panel y tus egresos manuales.</div>
+            <div class="pg-sub">Egresos del Panel (editables), tus egresos manuales, y resumen por categoría.</div>
           </div>
           <select class="msel" id="e-msel" onchange="renderEgresos()"></select>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;">
+          <!-- Panel automáticos — editables -->
           <div class="sbox">
             <div class="sbox-t">Del Panel (automáticos)</div>
             <div id="e-panel-lista"><div class="empty">Sin egresos en el período</div></div>
@@ -394,11 +413,24 @@ html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'DM
               <span class="tr" id="e-panel-total">$0</span>
             </div>
           </div>
+
+          <!-- Mis egresos manuales -->
           <div class="sbox">
             <div class="sbox-t">Mis Egresos</div>
-            <div style="display:grid;grid-template-columns:1fr 90px 80px 34px;gap:6px;margin-bottom:10px;">
+            <div style="display:grid;grid-template-columns:1fr 90px 110px 80px 34px;gap:6px;margin-bottom:10px;">
               <input type="text" class="inp" id="negr-concepto" placeholder="Concepto">
               <input type="number" class="inp" id="negr-monto" placeholder="Monto">
+              <select class="inp" id="negr-cat">
+                <option value="Sueldos">👷 Sueldos</option>
+                <option value="Adelantos">💰 Adelantos</option>
+                <option value="Contador">📊 Contador</option>
+                <option value="Luz/Gas/Agua">💡 Luz/Gas/Agua</option>
+                <option value="Mercado">🛒 Mercado</option>
+                <option value="Limpieza">🧹 Limpieza</option>
+                <option value="Reparaciones">🔧 Reparaciones</option>
+                <option value="Retiros">🏧 Retiros</option>
+                <option value="Otros">📦 Otros</option>
+              </select>
               <select class="inp" id="negr-origen">
                 <option value="efectivo">💵 Efectivo</option>
                 <option value="banco">🏦 Banco</option>
@@ -412,6 +444,18 @@ html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'DM
               <span class="tr" id="e-manual-total">$0</span>
             </div>
           </div>
+        </div>
+
+        <!-- Empleados: adelantos y sueldo a pagar -->
+        <div class="sbox" id="e-emp-section" style="display:none;margin-bottom:18px;">
+          <div class="sbox-t">Empleados — Adelantos del Mes</div>
+          <div id="e-emp-lista"></div>
+        </div>
+
+        <!-- Breakdown por categoría -->
+        <div class="sbox">
+          <div class="sbox-t">Resumen por Categoría</div>
+          <div id="e-breakdown"><div class="empty">Sin datos para mostrar</div></div>
         </div>
       </div>
 
@@ -453,6 +497,13 @@ html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'DM
           <div class="sbox-t">Menú de Consumos</div>
           <div id="menu-edit" style="max-height:320px;overflow-y:auto;padding-right:4px;margin-bottom:8px;"></div>
           <button class="add-btn" onclick="addMI()">+ Agregar ítem</button>
+        </div>
+
+        <div class="sbox">
+          <div class="sbox-t">Empleados</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Nombre y sueldo mensual. Se usan para el selector de adelantos en el Panel.</div>
+          <div id="emp-edit" style="margin-bottom:8px;"></div>
+          <button class="add-btn" onclick="addEmp()">+ Agregar empleado</button>
         </div>
 
         <div style="display:flex;align-items:center;gap:12px;">
@@ -536,7 +587,7 @@ async function api(action,data={}){
 // STATE
 let ALL=[];
 let PENDING=[];
-let CFG={prices:{esp:{base:6000,extra:2000},sim:{base:5000,extra:1500}},cats:{1:'sim',2:'sim',3:'esp',4:'esp',5:'esp',9:'esp',10:'esp',11:'sim',12:'sim'},menu:[]};
+let CFG={prices:{esp:{base:6000,extra:2000},sim:{base:5000,extra:1500}},cats:{1:'sim',2:'sim',3:'esp',4:'esp',5:'esp',9:'esp',10:'esp',11:'sim',12:'sim'},menu:[],empleados:[]};
 let FILTRO='hoy';
 let MESES_CER=[];
 
@@ -547,8 +598,8 @@ async function initApp(){
   updPendBadge();
 
   const cfgR=await api('getConfig');
-  if(cfgR.ok&&cfgR.prices){CFG.prices=cfgR.prices;CFG.cats=cfgR.cats||CFG.cats;CFG.menu=cfgR.menu||CFG.menu;}
-  popCfgForm();renderRoomGrid();renderMenuEdit();
+  if(cfgR.ok&&cfgR.prices){CFG.prices=cfgR.prices;CFG.cats=cfgR.cats||CFG.cats;CFG.menu=cfgR.menu||CFG.menu;CFG.empleados=cfgR.empleados||[];}
+  popCfgForm();renderRoomGrid();renderMenuEdit();renderEmpEdit();
 
   const r=await api('getCierres');
   if(r.ok)ALL=r.cierres;
@@ -774,11 +825,12 @@ function saveMisEgr(mk,arr){try{localStorage.setItem(getMisEgrK(mk),JSON.stringi
 function addMisEgr(){
   const con=document.getElementById('negr-concepto').value.trim();
   const mon=parseInt(document.getElementById('negr-monto').value)||0;
+  const cat=document.getElementById('negr-cat').value;
   const ori=document.getElementById('negr-origen').value;
   if(!con||!mon){toast('Completá concepto y monto','ty');return;}
   const mk=document.getElementById('e-msel').value;
   const arr=getMisEgr(mk);
-  arr.push({concepto:con,monto:mon,origen:ori,fecha:new Date().toISOString().slice(0,10)});
+  arr.push({concepto:con,monto:mon,categoria:cat,origen:ori,fecha:new Date().toISOString().slice(0,10)});
   saveMisEgr(mk,arr);
   document.getElementById('negr-concepto').value='';
   document.getElementById('negr-monto').value='';
@@ -791,41 +843,151 @@ function delMisEgr(mk,idx){
   renderEgresos();renderInicio();
 }
 
+const CATS=['Sueldos','Adelantos','Contador','Luz/Gas/Agua','Mercado','Limpieza','Reparaciones','Retiros','Otros'];
+const CAT_COLORS={'Sueldos':'#7090c0','Adelantos':'#d4a030','Contador':'#8098b0','Luz/Gas/Agua':'#5cb88a','Mercado':'#c8b89a','Limpieza':'#9a7ab8','Reparaciones':'#d47060','Retiros':'#d4a030','Otros':'#6e6c66'};
+
+function inferCat(concepto){
+  const c=(concepto||'').toLowerCase();
+  if(c.includes('adelanto'))return'Adelantos';
+  if(c.includes('sueldo')||c.includes('salario'))return'Sueldos';
+  if(c.includes('luz')||c.includes('gas')||c.includes('agua')||c.includes('servicio'))return'Luz/Gas/Agua';
+  if(c.includes('mercado')||c.includes('super')||c.includes('compra'))return'Mercado';
+  if(c.includes('limpieza')||c.includes('limpi'))return'Limpieza';
+  if(c.includes('repara')||c.includes('arreglo')||c.includes('plomero')||c.includes('elect'))return'Reparaciones';
+  if(c.includes('contador'))return'Contador';
+  if(c.includes('retiro'))return'Retiros';
+  return'Otros';
+}
+
 function renderEgresos(){
   const mk=document.getElementById('e-msel').value;
   if(!mk)return;
   const cierres=ALL.filter(c=>(c['Fecha']||'').slice(0,7)===mk);
-  let panArr=[],panTot=0;
-  cierres.forEach(c=>{
+
+  // Panel egresos — editables inline
+  let panItems=[],panTot=0;
+  cierres.forEach((c,ci)=>{
     const eg=c['Detalle Egresos'];
-    if(Array.isArray(eg))eg.forEach(e=>{
-      panArr.push({con:e.concepto,mon:e.monto,fecha:(c['Fecha']||'').slice(0,10)});
+    if(Array.isArray(eg))eg.forEach((e,ei)=>{
+      panItems.push({con:e.concepto,mon:Number(e.monto)||0,cat:e.categoria||inferCat(e.concepto),fecha:(c['Fecha']||'').slice(0,10),ci,ei});
       panTot+=Number(e.monto)||0;
     });
   });
   const panEl=document.getElementById('e-panel-lista');
-  panEl.innerHTML=panArr.length?panArr.map(e=>`
-    <div class="egr-row">
-      <span>${e.fecha} — ${e.con}</span>
-      <span class="tr">−$${Number(e.mon).toLocaleString('es-AR')}</span>
-    </div>`).join(''):`<div class="empty">Sin egresos en el período</div>`;
+  if(!panItems.length){panEl.innerHTML='<div class="empty">Sin egresos en el período</div>';}
+  else{
+    panEl.innerHTML=panItems.map((e,i)=>{
+      const catOpts=CATS.map(c=>`<option value="${c}"${c===e.cat?' selected':''}>${c}</option>`).join('');
+      return`<div style="padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);">
+        <div class="egr-row" style="border:none;padding:3px 0;">
+          <span style="font-size:12px;">${e.fecha} — <span id="ep-con-${i}">${e.con}</span></span>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:11px;padding:1px 6px;border-radius:10px;background:rgba(255,255,255,.06);color:var(--muted2);" id="ep-cat-${i}">${e.cat}</span>
+            <span class="tr" style="font-size:12px;">−$${e.mon.toLocaleString('es-AR')}</span>
+            <button class="bico" onclick="toggleEgrEdit('ep-form-${i}')" title="Editar">✏️</button>
+          </div>
+        </div>
+        <div class="egr-edit-form" id="ep-form-${i}">
+          <div style="display:grid;grid-template-columns:1fr 90px 110px 32px;gap:6px;">
+            <input class="inp" type="text" id="ep-inp-con-${i}" value="${e.con.replace(/"/g,'&quot;')}" placeholder="Concepto" style="font-size:12px;">
+            <input class="inp" type="number" id="ep-inp-mon-${i}" value="${e.mon}" style="font-size:12px;font-family:'DM Mono',monospace;">
+            <select class="inp" id="ep-inp-cat-${i}" style="font-size:12px;">${catOpts}</select>
+            <button class="btn btn-p btn-sm" onclick="saveEgrPanel(${e.ci},${e.ei},${i})" style="padding:0;font-size:16px;border-radius:6px;">✓</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
   document.getElementById('e-panel-total').textContent='−$'+panTot.toLocaleString('es-AR');
 
+  // Mis egresos
   const mis=getMisEgr(mk);
   let misTot=0;
   const manEl=document.getElementById('e-manual-lista');
-  manEl.innerHTML=mis.length?mis.map((e,i)=>{
-    misTot+=e.monto;
-    const tag=e.origen==='efectivo'?'<span class="tag tag-ef">💵 Efectivo</span>':'<span class="tag tag-ba">🏦 Banco</span>';
-    return`<div class="egr-row">
-      <span>${e.fecha} — ${e.concepto} ${tag}</span>
-      <div style="display:flex;align-items:center;gap:8px;">
-        <span class="tr">−$${e.monto.toLocaleString('es-AR')}</span>
-        <button class="bico" onclick="delMisEgr('${mk}',${i})">✕</button>
-      </div>
-    </div>`;
-  }).join(''):`<div class="empty">Sin egresos cargados</div>`;
+  if(!mis.length){manEl.innerHTML='<div class="empty">Sin egresos cargados</div>';}
+  else{
+    manEl.innerHTML=mis.map((e,i)=>{
+      misTot+=e.monto;
+      const tagOri=e.origen==='efectivo'?'<span class="tag tag-ef">💵</span>':'<span class="tag tag-ba">🏦</span>';
+      const tagCat=e.categoria?`<span style="font-size:10px;padding:1px 6px;border-radius:10px;background:rgba(255,255,255,.06);color:var(--muted2);">${e.categoria}</span>`:'';
+      return`<div class="egr-row">
+        <span style="display:flex;align-items:center;gap:5px;font-size:12px;">${e.fecha} — ${e.concepto} ${tagOri} ${tagCat}</span>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span class="tr" style="font-size:12px;">−$${e.monto.toLocaleString('es-AR')}</span>
+          <button class="bico" onclick="delMisEgr('${mk}',${i})">✕</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
   document.getElementById('e-manual-total').textContent='−$'+misTot.toLocaleString('es-AR');
+
+  // Empleados: adelantos del mes
+  const empSec=document.getElementById('e-emp-section');
+  const emps=CFG.empleados||[];
+  if(emps.length>0){
+    empSec.style.display='block';
+    // recolectar adelantos del panel
+    const adelMap={};
+    emps.forEach(e=>adelMap[e.nombre.toLowerCase()]={adelantos:0,sueldo:e.sueldo||0,nombre:e.nombre});
+    [...panItems,...mis.map(e=>({con:e.concepto,cat:e.categoria||inferCat(e.concepto),mon:e.monto}))].forEach(e=>{
+      if(e.cat==='Adelantos'||inferCat(e.con||e.concepto||'')=='Adelantos'){
+        const conc=(e.con||e.concepto||'').toLowerCase();
+        emps.forEach(emp=>{
+          if(conc.includes(emp.nombre.toLowerCase()))adelMap[emp.nombre.toLowerCase()].adelantos+=e.mon||e.monto||0;
+        });
+      }
+    });
+    document.getElementById('e-emp-lista').innerHTML=emps.map(emp=>{
+      const d=adelMap[emp.nombre.toLowerCase()]||{adelantos:0,sueldo:emp.sueldo||0};
+      const saldo=d.sueldo-d.adelantos;
+      return`<div class="emp-card" style="margin-bottom:8px;">
+        <div class="emp-avatar">${emp.nombre.charAt(0).toUpperCase()}</div>
+        <div><div class="emp-name">${emp.nombre}</div><div style="font-size:11px;color:var(--muted);">Sueldo: $${(emp.sueldo||0).toLocaleString('es-AR')}</div></div>
+        <div class="emp-stats">
+          <div class="emp-stat"><div class="el">Adelantos</div><div class="ev" style="color:var(--yellow);">$${d.adelantos.toLocaleString('es-AR')}</div></div>
+          <div class="emp-stat"><div class="el">A pagar</div><div class="ev" style="color:${saldo>0?'var(--cash)':'var(--muted2)'};">$${Math.max(0,saldo).toLocaleString('es-AR')}</div></div>
+        </div>
+      </div>`;
+    }).join('');
+  } else {
+    empSec.style.display='none';
+  }
+
+  // Breakdown por categoría
+  const allEgr=[...panItems.map(e=>({cat:e.cat,mon:e.mon})),...mis.map(e=>({cat:e.categoria||inferCat(e.concepto),mon:e.monto}))];
+  const catMap={};
+  allEgr.forEach(e=>{catMap[e.cat]=(catMap[e.cat]||0)+e.mon;});
+  const totalEgr=Object.values(catMap).reduce((a,b)=>a+b,0);
+  const bdEl=document.getElementById('e-breakdown');
+  if(!totalEgr){bdEl.innerHTML='<div class="empty">Sin datos para mostrar</div>';return;}
+  const sorted=Object.entries(catMap).sort((a,b)=>b[1]-a[1]);
+  bdEl.innerHTML=sorted.map(([cat,mon])=>{
+    const pct=totalEgr>0?Math.round(mon/totalEgr*100):0;
+    const color=CAT_COLORS[cat]||'var(--muted2)';
+    return`<div class="cat-bar">
+      <span class="cat-name">${cat}</span>
+      <div class="cat-track"><div class="cat-fill" style="width:${pct}%;background:${color};"></div></div>
+      <span class="cat-pct">${pct}%</span>
+      <span class="cat-monto">−$${mon.toLocaleString('es-AR')}</span>
+    </div>`;
+  }).join('');
+}
+
+function toggleEgrEdit(id){
+  document.getElementById(id).classList.toggle('open');
+}
+function saveEgrPanel(ci,ei,i){
+  const c=ALL[ci];if(!c)return;
+  if(!Array.isArray(c['Detalle Egresos']))return;
+  const e=c['Detalle Egresos'][ei];if(!e)return;
+  e.concepto=document.getElementById('ep-inp-con-'+i).value;
+  e.monto=parseInt(document.getElementById('ep-inp-mon-'+i).value)||0;
+  e.categoria=document.getElementById('ep-inp-cat-'+i).value;
+  // actualizar total egresos del cierre
+  c['Egresos']=c['Detalle Egresos'].reduce((a,x)=>a+(Number(x.monto)||0),0);
+  toggleEgrEdit('ep-form-'+i);
+  renderEgresos();renderInicio();
+  toast('Egreso actualizado','tg');
 }
 
 // HISTORIAL
@@ -942,6 +1104,17 @@ function renderMenuEdit(){
 }
 function addMI(){if(!CFG.menu)CFG.menu=[];CFG.menu.push({name:'Nuevo ítem',price:0});renderMenuEdit();}
 function delMI(i){CFG.menu.splice(i,1);renderMenuEdit();}
+function renderEmpEdit(){
+  if(!CFG.empleados)CFG.empleados=[];
+  document.getElementById('emp-edit').innerHTML=CFG.empleados.map((e,i)=>`
+    <div style="display:grid;grid-template-columns:1fr 130px 32px;gap:6px;margin-bottom:6px;align-items:center;">
+      <input class="inp" type="text" value="${(e.nombre||'').replace(/"/g,'&quot;')}" placeholder="Nombre" oninput="CFG.empleados[${i}].nombre=this.value">
+      <input class="inp" type="number" value="${e.sueldo||0}" placeholder="Sueldo/mes" oninput="CFG.empleados[${i}].sueldo=parseInt(this.value)||0" style="font-family:'DM Mono',monospace;">
+      <button class="me-del" onclick="delEmp(${i})">✕</button>
+    </div>`).join('');
+}
+function addEmp(){if(!CFG.empleados)CFG.empleados=[];CFG.empleados.push({nombre:'',sueldo:0});renderEmpEdit();}
+function delEmp(i){CFG.empleados.splice(i,1);renderEmpEdit();}
 async function saveCfg(){
   if(!CFG.prices)CFG.prices={esp:{base:0,extra:0},sim:{base:0,extra:0}};
   if(!CFG.prices.esp)CFG.prices.esp={base:0,extra:0};
@@ -950,8 +1123,8 @@ async function saveCfg(){
   CFG.prices.esp.extra=parseInt(document.getElementById('cfg-esp-extra').value)||0;
   CFG.prices.sim.base=parseInt(document.getElementById('cfg-sim-base').value)||0;
   CFG.prices.sim.extra=parseInt(document.getElementById('cfg-sim-extra').value)||0;
-  if(!CFG.cats)CFG.cats={};if(!CFG.menu)CFG.menu=[];
-  const r=await api('saveConfig',{data:{prices:CFG.prices,cats:CFG.cats,menu:CFG.menu}});
+  if(!CFG.cats)CFG.cats={};if(!CFG.menu)CFG.menu=[];if(!CFG.empleados)CFG.empleados=[];
+  const r=await api('saveConfig',{data:{prices:CFG.prices,cats:CFG.cats,menu:CFG.menu,empleados:CFG.empleados}});
   if(r.ok){const ok=document.getElementById('save-ok');ok.classList.add('show');setTimeout(()=>ok.classList.remove('show'),3000);toast('Configuración guardada','tg');}
   else toast('Error: '+r.error,'ty');
 }
