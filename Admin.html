@@ -12,186 +12,201 @@
   --text:#e8e6e1;--muted:#6e6c66;--muted2:#9a9890;
   --acc:#c8b89a;--acc2:#e2d4bc;
   --acc-bg:rgba(200,184,154,.08);--acc-border:rgba(200,184,154,.22);
-  --green:#4caf7a;--green-bg:#192b21;--green-b:#234d33;
-  --red:#d95f5f;--red-bg:#2b1818;--red-b:#4d2828;
-  --yellow:#d4a030;--yellow-bg:#2a2010;
+  --green:#4caf7a;--red:#d95f5f;--yellow:#d4a030;
   --cash:#5cb88a;--transf:#7090c0;
   --esp:#b8906a;--esp-bg:rgba(184,144,106,.1);--esp-border:rgba(184,144,106,.3);
   --sim:#8098b0;--sim-bg:rgba(128,152,176,.1);--sim-border:rgba(128,152,176,.3);
+  --sb:220px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;}
 
-/* PIN SCREEN */
-#pin-screen{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  min-height:100vh;gap:20px;
-}
+/* PIN */
+#pin-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:20px;}
 .pin-logo{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:4px;color:var(--acc2);}
 .pin-sub{font-size:13px;color:var(--muted);margin-top:-14px;}
-.pin-display{
-  font-family:'DM Mono',monospace;font-size:36px;letter-spacing:12px;
-  text-align:center;padding:16px 24px;color:var(--acc2);
-  background:var(--s2);border:1px solid var(--border);border-radius:12px;
-  min-width:200px;min-height:72px;
-}
+.pin-display{font-family:'DM Mono',monospace;font-size:36px;letter-spacing:12px;text-align:center;padding:16px 24px;color:var(--acc2);background:var(--s2);border:1px solid var(--border);border-radius:12px;min-width:200px;min-height:72px;}
 .numpad{display:grid;grid-template-columns:repeat(3,72px);gap:10px;}
-.npbtn{
-  background:var(--s2);border:1px solid var(--border);border-radius:10px;
-  padding:18px;font-size:20px;font-family:'DM Mono',monospace;
-  cursor:pointer;text-align:center;color:var(--text);transition:all .15s;
-}
-.npbtn:hover{background:var(--s3);border-color:var(--border2);}
+.npbtn{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:18px;font-size:20px;font-family:'DM Mono',monospace;cursor:pointer;text-align:center;color:var(--text);transition:all .15s;}
+.npbtn:hover{background:var(--s3);}
 .npbtn:active{transform:scale(.95);}
-.npbtn-del{font-size:16px;color:var(--muted2);}
 .npbtn-ok{background:var(--acc);color:#1c1a16;font-weight:700;border-color:var(--acc);}
-.npbtn-ok:hover{background:var(--acc2);}
 .pin-err{font-size:13px;color:var(--red);min-height:20px;text-align:center;}
 
 /* APP */
 #app{display:none;}
-header{
-  height:54px;background:var(--s1);border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;padding:0 24px;
-}
-.logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:var(--acc2);}
-.logo em{color:var(--muted);font-style:normal;font-size:12px;letter-spacing:1px;margin-left:8px;font-family:'DM Sans',sans-serif;font-weight:300;}
-.htabs{display:flex;gap:4px;}
-.htab{padding:7px 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;background:transparent;color:var(--muted2);}
-.htab:hover{color:var(--text);}
-.htab.active{background:var(--acc);color:#1c1a16;}
+.layout{display:flex;min-height:100vh;}
 
-.page{display:none;padding:24px;max-width:1100px;margin:0 auto;}
-.page.active{display:block;}
-
-/* ── BALANCE ── */
-.bal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
-.bal-title{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;color:var(--acc2);}
-.sync-btn{background:var(--s2);border:1px solid var(--border);color:var(--muted2);border-radius:8px;padding:8px 14px;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s;}
-.sync-btn:hover{color:var(--text);border-color:var(--border2);}
-.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green);}
+/* SIDEBAR */
+.sb{width:var(--sb);min-height:100vh;background:var(--s1);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;}
+.sb-logo{padding:20px 18px 14px;border-bottom:1px solid var(--border);}
+.sb-logo-main{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:var(--acc2);}
+.sb-logo-sub{font-size:10px;color:var(--muted);letter-spacing:1px;}
+.sb-nav{flex:1;padding:10px 0;}
+.sb-sec{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:10px 18px 4px;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:10px 18px;cursor:pointer;font-size:13px;color:var(--muted2);transition:all .15s;border-left:3px solid transparent;}
+.sb-item:hover{color:var(--text);background:rgba(255,255,255,.03);}
+.sb-item.active{color:var(--acc2);background:var(--acc-bg);border-left-color:var(--acc);}
+.sb-icon{font-size:15px;width:20px;text-align:center;}
+.sb-badge{margin-left:auto;font-size:10px;background:var(--yellow);color:#1c1a16;border-radius:10px;padding:1px 6px;font-weight:700;}
+.sb-foot{padding:14px 18px;border-top:1px solid var(--border);}
+.sb-sync{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted2);cursor:pointer;padding:6px 0;}
+.sb-sync:hover{color:var(--text);}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0;}
 .sync-dot.pending{background:var(--yellow);}
 
-/* Resumen cards */
-.resumen-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
-.rcard{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
-.rcard .rl{font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;}
-.rcard .rv{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;}
-.rcard .rs{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:2px;}
-.rc-total .rv{color:var(--acc);}
-.rc-cash .rv{color:var(--cash);}
-.rc-transf .rv{color:var(--transf);}
-.rc-net .rv{color:var(--green);}
+/* CONTENT */
+.content{margin-left:var(--sb);flex:1;padding:28px 30px;max-width:calc(100vw - var(--sb));}
+.page{display:none;}
+.page.active{display:block;}
+.pg-title{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;color:var(--acc2);margin-bottom:4px;}
+.pg-sub{font-size:12px;color:var(--muted);margin-bottom:22px;}
 
-/* Filtros período */
-.periodo-bar{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;align-items:center;}
-.pbtn{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--s2);color:var(--muted2);transition:all .15s;}
-.pbtn:hover{color:var(--text);border-color:var(--border2);}
-.pbtn.active{background:var(--acc);color:#1c1a16;border-color:var(--acc);}
-.period-dates{display:flex;gap:6px;align-items:center;}
-.period-dates input{background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:5px 8px;font-size:12px;font-family:'DM Mono',monospace;outline:none;}
-.period-dates input:focus{border-color:var(--acc);}
+/* CARDS */
+.cr{display:grid;gap:12px;margin-bottom:16px;}
+.cr3{grid-template-columns:repeat(3,1fr);}
+.cr4{grid-template-columns:repeat(4,1fr);}
+.cr2{grid-template-columns:repeat(2,1fr);}
+.card{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
+.cl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;}
+.cv{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;}
+.cs{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:2px;}
+.c-acc .cv{color:var(--acc);}
+.c-cash .cv{color:var(--cash);}
+.c-transf .cv{color:var(--transf);}
+.c-red .cv{color:var(--red);}
+.c-text .cv{color:var(--text);}
+.c-acc2 .cv{color:var(--acc2);}
 
-/* Meses desplegables */
-.mes-block{background:var(--s2);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden;}
-.mes-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:14px 18px;cursor:pointer;transition:background .15s;user-select:none;
-}
-.mes-header:hover{background:var(--s3);}
-.mes-nombre{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:2px;color:var(--acc2);}
-.mes-stats{display:flex;gap:20px;align-items:center;}
-.mes-stat{text-align:right;}
-.mes-stat .lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
-.mes-stat .val{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;}
-.mes-arrow{color:var(--muted);font-size:12px;transition:transform .2s;}
-.mes-arrow.open{transform:rotate(90deg);}
-.mes-body{display:none;border-top:1px solid var(--border);}
-.mes-body.open{display:block;}
+/* SBOX */
+.sbox{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:14px;}
+.sbox-t{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--acc2);margin-bottom:12px;}
+.sbox-row{display:flex;align-items:center;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.sbox-row:last-child{border:none;}
 
-/* Tabla cierres */
-.cierre-table{width:100%;border-collapse:collapse;}
-.cierre-table th{
-  text-align:left;padding:8px 14px;font-size:10px;font-weight:700;
-  letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);
-  border-bottom:1px solid var(--border);
-}
-.cierre-table td{
-  padding:10px 14px;font-size:13px;border-bottom:1px solid rgba(255,255,255,.04);
-}
-.cierre-table tr:last-child td{border:none;}
-.cierre-table tr:hover td{background:rgba(255,255,255,.02);}
-.td-mono{font-family:'DM Mono',monospace;}
-.td-cash{color:var(--cash);font-family:'DM Mono',monospace;}
-.td-transf{color:var(--transf);font-family:'DM Mono',monospace;}
-.td-egr{color:var(--red);font-family:'DM Mono',monospace;}
-.td-sobre{color:var(--acc);font-family:'DM Mono',monospace;font-weight:600;}
-.turno-badge{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700;letter-spacing:.5px;}
+/* TABLE */
+.dt{width:100%;border-collapse:collapse;}
+.dt th{text-align:left;padding:8px 12px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);}
+.dt td{padding:9px 12px;font-size:13px;border-bottom:1px solid rgba(255,255,255,.04);}
+.dt tr:last-child td{border:none;}
+.dt tr:hover td{background:rgba(255,255,255,.02);}
+.tm{font-family:'DM Mono',monospace;}
+.tc{color:var(--cash);font-family:'DM Mono',monospace;}
+.tt{color:var(--transf);font-family:'DM Mono',monospace;}
+.tr{color:var(--red);font-family:'DM Mono',monospace;}
+.ta{color:var(--acc);font-family:'DM Mono',monospace;}
+.tbadge{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700;letter-spacing:.5px;}
 .tb-m{background:rgba(200,184,154,.1);color:var(--acc);}
 .tb-t{background:rgba(112,144,192,.1);color:var(--transf);}
 .tb-n{background:rgba(76,175,122,.1);color:var(--green);}
 
-/* detalle egresos expandible */
-.egr-expand{font-size:11px;color:var(--muted);cursor:pointer;text-decoration:underline;text-decoration-style:dotted;}
-.egr-detail{display:none;margin-top:4px;padding:6px 10px;background:rgba(217,95,95,.05);border-radius:6px;font-size:11px;color:var(--muted2);}
-.egr-detail.open{display:block;}
+/* PROYECCION */
+.pbar{background:var(--s2);border:1px solid var(--acc-border);border-radius:12px;padding:12px 18px;margin-bottom:14px;display:flex;gap:28px;flex-wrap:wrap;align-items:center;}
+.plbl{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--acc);}
+.pi{display:flex;flex-direction:column;gap:2px;}
+.pi .pl{font-size:10px;color:var(--muted);}
+.pi .pv{font-family:'DM Mono',monospace;font-size:14px;}
 
-.empty-state{text-align:center;padding:40px;color:var(--muted);font-size:14px;}
+/* FILTER */
+.fbar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+.fbtn{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--s2);color:var(--muted2);transition:all .15s;}
+.fbtn:hover{color:var(--text);}
+.fbtn.active{background:var(--acc);color:#1c1a16;border-color:var(--acc);}
+.date-inp{background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:5px 8px;font-size:12px;font-family:'DM Mono',monospace;outline:none;}
+.date-inp:focus{border-color:var(--acc);}
 
-/* ── CONFIG ── */
-.cfg-section{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;}
-.cfg-section-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--acc2);margin-bottom:16px;}
-.price-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-.price-cat-block{background:var(--bg);border-radius:10px;padding:14px;border:1px solid var(--border);}
-.price-cat-block.esp-block{border-color:var(--esp-border);}
-.price-cat-block.sim-block{border-color:var(--sim-border);}
-.price-cat-title{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;}
-.esp-block .price-cat-title{color:var(--esp);}
-.sim-block .price-cat-title{color:var(--sim);}
+/* INPUTS */
+.inp{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;width:100%;}
+.inp:focus{border-color:var(--acc);}
+
+/* BUTTONS */
+.btn{border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;}
+.btn-p{background:var(--acc);color:#1c1a16;}
+.btn-p:hover{background:var(--acc2);}
+.btn-g{background:var(--s3);color:var(--muted2);border:1px solid var(--border);}
+.btn-g:hover{color:var(--text);}
+.btn-sm{padding:5px 12px;font-size:11px;border-radius:6px;}
+.bico{background:none;border:none;cursor:pointer;color:var(--muted);font-size:13px;padding:3px 6px;border-radius:4px;transition:all .15s;}
+.bico:hover{color:var(--text);background:var(--s3);}
+
+/* MES SELECT */
+.msel{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:7px 12px;color:var(--text);font-size:13px;outline:none;cursor:pointer;}
+.msel:focus{border-color:var(--acc);}
+
+/* EGRESO ROW */
+.egr-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px;}
+.egr-row:last-child{border:none;}
+.tag{font-size:10px;padding:1px 7px;border-radius:20px;font-weight:700;}
+.tag-ef{background:rgba(92,184,138,.1);color:var(--cash);}
+.tag-ba{background:rgba(112,144,192,.1);color:var(--transf);}
+.tag-ad{background:rgba(212,160,48,.1);color:var(--yellow);}
+
+/* CONFIG */
+.cfg-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.pb{background:var(--bg);border-radius:10px;padding:14px;border:1px solid var(--border);}
+.pb.esp{border-color:var(--esp-border);}
+.pb.sim{border-color:var(--sim-border);}
+.pb-t{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;}
+.esp .pb-t{color:var(--esp);}
+.sim .pb-t{color:var(--sim);}
 .cfg-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
 .cfg-row:last-child{margin-bottom:0;}
-.cfg-row label{font-size:13px;color:var(--text);flex:1;}
+.cfg-row label{font-size:13px;flex:1;}
 .cfg-inp{width:120px;background:var(--s2);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--text);font-size:13px;font-family:'DM Mono',monospace;outline:none;}
 .cfg-inp:focus{border-color:var(--acc);}
-
-.room-assign-grid{display:grid;grid-template-columns:repeat(9,1fr);gap:8px;margin-bottom:6px;}
-.ra-cell{background:var(--s2);border:1.5px solid var(--border);border-radius:8px;padding:10px 4px;text-align:center;cursor:pointer;transition:all .15s;}
-.ra-cell:hover{border-color:var(--border2);}
-.ra-num{font-family:'Bebas Neue',sans-serif;font-size:22px;line-height:1;color:var(--muted2);}
-.ra-label{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-top:3px;}
-.ra-cell.is-esp{background:var(--esp-bg);border-color:var(--esp-border);}
-.ra-cell.is-esp .ra-num{color:var(--esp);}
-.ra-cell.is-esp .ra-label{color:var(--esp);}
-.ra-cell.is-sim{background:var(--sim-bg);border-color:var(--sim-border);}
-.ra-cell.is-sim .ra-num{color:var(--sim);}
-.ra-cell.is-sim .ra-label{color:var(--sim);}
-.ra-hint{font-size:11px;color:var(--muted);margin-top:4px;}
-
-.menu-edit-row{display:grid;grid-template-columns:1fr 110px 32px;gap:6px;margin-bottom:6px;align-items:center;}
-.me-inp{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:7px 9px;color:var(--text);font-size:12px;outline:none;width:100%;}
-.me-inp:focus{border-color:var(--acc);}
-.me-del{background:var(--s3);border:1px solid var(--border);color:var(--muted);border-radius:6px;cursor:pointer;font-size:12px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
-.me-del:hover{color:var(--red);border-color:var(--red);}
-.add-mi{background:var(--s3);border:1px dashed var(--border);color:var(--muted2);border-radius:8px;padding:7px;font-size:12px;width:100%;cursor:pointer;margin-top:4px;transition:all .15s;}
-.add-mi:hover{border-color:var(--acc);color:var(--acc);}
-
-.btn-acc{background:var(--acc);color:#1c1a16;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;}
-.btn-acc:hover{background:var(--acc2);}
-.btn-ghost{background:var(--s3);color:var(--muted2);border:1px solid var(--border);border-radius:8px;padding:10px 20px;font-size:13px;cursor:pointer;transition:all .15s;}
-.btn-ghost:hover{color:var(--text);border-color:var(--border2);}
-.save-ok{font-size:12px;color:var(--green);margin-left:10px;display:none;}
+.rgrid{display:grid;grid-template-columns:repeat(9,1fr);gap:8px;margin-bottom:6px;}
+.ra{background:var(--s2);border:1.5px solid var(--border);border-radius:8px;padding:10px 4px;text-align:center;cursor:pointer;transition:all .15s;}
+.ra-n{font-family:'Bebas Neue',sans-serif;font-size:22px;line-height:1;color:var(--muted2);}
+.ra-l{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-top:3px;}
+.ra.is-esp{background:var(--esp-bg);border-color:var(--esp-border);}
+.ra.is-esp .ra-n,.ra.is-esp .ra-l{color:var(--esp);}
+.ra.is-sim{background:var(--sim-bg);border-color:var(--sim-border);}
+.ra.is-sim .ra-n,.ra.is-sim .ra-l{color:var(--sim);}
+.menu-row{display:grid;grid-template-columns:1fr 110px 32px;gap:6px;margin-bottom:6px;align-items:center;}
+.me-del{background:var(--s3);border:1px solid var(--border);color:var(--muted);border-radius:6px;cursor:pointer;font-size:12px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;}
+.me-del:hover{color:var(--red);}
+.add-btn{background:var(--s3);border:1px dashed var(--border);color:var(--muted2);border-radius:8px;padding:7px;font-size:12px;width:100%;cursor:pointer;margin-top:4px;}
+.add-btn:hover{border-color:var(--acc);color:var(--acc);}
+.save-ok{font-size:12px;color:var(--green);display:none;}
 .save-ok.show{display:inline;}
 
+/* MES CERRADO */
+.mes-block{background:var(--s2);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden;}
+.mes-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;transition:background .15s;}
+.mes-hdr:hover{background:var(--s3);}
+.mes-nom{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--acc2);}
+.mes-stats{display:flex;gap:18px;align-items:center;}
+.mes-stat .lbl{font-size:10px;color:var(--muted);}
+.mes-stat .val{font-family:'DM Mono',monospace;font-size:13px;}
+.mes-arr{color:var(--muted);font-size:11px;transition:transform .2s;}
+.mes-arr.open{transform:rotate(90deg);}
+.mes-body{display:none;border-top:1px solid var(--border);padding:14px 16px;}
+.mes-body.open{display:block;}
+.cer-badge{font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(76,175,122,.1);color:var(--green);font-weight:700;}
+
+/* MODAL */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;align-items:center;justify-content:center;}
+.modal.open{display:flex;}
+.mbox{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:26px;width:90%;max-width:500px;max-height:90vh;overflow-y:auto;}
+.mbox-t{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:var(--acc2);margin-bottom:18px;}
+.mfoot{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid var(--border);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.flbl{font-size:11px;color:var(--muted);display:block;margin-bottom:4px;}
+
+/* DIVIDER */
+.div{height:1px;background:var(--border);margin:12px 0;}
+
+/* TOAST */
 .toast{position:fixed;bottom:18px;right:18px;background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:10px 15px;font-size:13px;box-shadow:0 8px 30px rgba(0,0,0,.5);z-index:600;transform:translateY(60px);opacity:0;transition:all .3s;max-width:260px;}
 .toast.show{transform:translateY(0);opacity:1;}
 .toast.tg{border-color:var(--green);color:var(--green);}
 .toast.ty{border-color:var(--yellow);color:var(--yellow);}
 .toast.ta{border-color:var(--acc);color:var(--acc);}
+.empty{text-align:center;padding:30px;color:var(--muted);font-size:14px;}
 </style>
 </head>
 <body>
 
-<!-- ── PIN SCREEN ── -->
 <div id="pin-screen">
   <div class="pin-logo">MOTEL</div>
   <div class="pin-sub">Administración — ingresá la clave</div>
@@ -206,236 +221,297 @@ header{
     <button class="npbtn" onclick="pinPress('7')">7</button>
     <button class="npbtn" onclick="pinPress('8')">8</button>
     <button class="npbtn" onclick="pinPress('9')">9</button>
-    <button class="npbtn npbtn-del" onclick="pinDel()">⌫</button>
+    <button class="npbtn" style="font-size:16px;color:var(--muted2);" onclick="pinDel()">⌫</button>
     <button class="npbtn" onclick="pinPress('0')">0</button>
     <button class="npbtn npbtn-ok" onclick="pinOk()">OK</button>
   </div>
   <div class="pin-err" id="pin-err"></div>
 </div>
 
-<!-- ── APP ── -->
 <div id="app">
-  <header>
-    <div class="logo">MOTEL<em>Administración</em></div>
-    <div class="htabs">
-      <button class="htab active" id="htab-balance" onclick="showPage('balance')">Balance</button>
-      <button class="htab" id="htab-config" onclick="showPage('config')">Config.</button>
-    </div>
-  </header>
+  <div class="layout">
 
-  <!-- BALANCE -->
-  <div class="page active" id="page-balance">
-    <div class="bal-header">
-      <div class="bal-title">Balance</div>
-      <div style="display:flex;gap:10px;align-items:center;">
-        <div id="pending-notice" style="display:none;font-size:12px;color:var(--yellow);">⚠ Hay cierres offline pendientes</div>
-        <button class="sync-btn" onclick="syncPendientes()">
+    <!-- SIDEBAR -->
+    <nav class="sb">
+      <div class="sb-logo">
+        <div class="sb-logo-main">MOTEL</div>
+        <div class="sb-logo-sub">Panel de Administración</div>
+      </div>
+      <div class="sb-nav">
+        <div class="sb-sec">Principal</div>
+        <div class="sb-item active" id="nav-inicio" onclick="goTo('inicio')">
+          <span class="sb-icon">🏠</span> Inicio
+        </div>
+        <div class="sb-item" id="nav-cierres" onclick="goTo('cierres')">
+          <span class="sb-icon">📋</span> Cierres
+        </div>
+        <div class="sb-sec">Finanzas</div>
+        <div class="sb-item" id="nav-egresos" onclick="goTo('egresos')">
+          <span class="sb-icon">💸</span> Egresos
+        </div>
+        <div class="sb-item" id="nav-historial" onclick="goTo('historial')">
+          <span class="sb-icon">📁</span> Historial Meses
+        </div>
+        <div class="sb-sec">Sistema</div>
+        <div class="sb-item" id="nav-config" onclick="goTo('config')">
+          <span class="sb-icon">⚙️</span> Configuración
+        </div>
+      </div>
+      <div class="sb-foot">
+        <div class="sb-sync" onclick="syncPendientes()">
           <span class="sync-dot" id="sync-dot"></span>
           <span id="sync-lbl">Sincronizar pendientes</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Resumen totales del período -->
-    <div class="resumen-grid">
-      <div class="rcard rc-total"><div class="rl">Total recaudado</div><div class="rv" id="res-total">$0</div><div class="rs" id="res-period">—</div></div>
-      <div class="rcard rc-cash"><div class="rl">Efectivo</div><div class="rv" id="res-cash">$0</div></div>
-      <div class="rcard rc-transf"><div class="rl">Transferencia</div><div class="rv" id="res-transf">$0</div></div>
-      <div class="rcard rc-net"><div class="rl">Neto (−egresos)</div><div class="rv" id="res-net">$0</div></div>
-    </div>
-
-    <!-- Filtros período -->
-    <div class="periodo-bar">
-      <button class="pbtn active" id="pb-hoy" onclick="setPeriod('hoy')">Hoy</button>
-      <button class="pbtn" id="pb-semana" onclick="setPeriod('semana')">Esta semana</button>
-      <button class="pbtn" id="pb-mes" onclick="setPeriod('mes')">Este mes</button>
-      <button class="pbtn" id="pb-custom" onclick="setPeriod('custom')">Personalizado</button>
-      <div class="period-dates" id="custom-dates" style="display:none;">
-        <input type="date" id="date-from">
-        <span style="color:var(--muted);">→</span>
-        <input type="date" id="date-to">
-        <button class="pbtn" onclick="applyCustom()">Aplicar</button>
-      </div>
-    </div>
-
-    <!-- Cierres agrupados por mes -->
-    <div id="meses-container"><div class="empty-state">Cargando datos...</div></div>
-
-    <!-- ═══ RESUMEN MES ═══ -->
-    <div style="margin-top:32px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--acc2);" id="mes-titulo">— RESUMEN DEL MES —</div>
-        <select id="mes-select" class="cfg-inp" style="width:170px;" onchange="renderMes()"></select>
-      </div>
-
-      <!-- CAJA -->
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;">
-        <div class="rcard" style="border-color:rgba(200,184,154,.3);">
-          <div class="rl">CAJA TOTAL</div>
-          <div class="rv" id="m-total" style="color:var(--acc);">$0</div>
-          <div class="rs" id="m-total-sub">ingresos del mes</div>
-        </div>
-        <div class="rcard" style="border-color:rgba(92,184,138,.3);">
-          <div class="rl">💵 EFECTIVO EN CAJA</div>
-          <div class="rv" id="m-efectivo" style="color:var(--cash);">$0</div>
-          <div class="rs">efectivo − egresos efectivo</div>
-        </div>
-        <div class="rcard" style="border-color:rgba(112,144,192,.3);">
-          <div class="rl">🏦 SALDO BANCO</div>
-          <div class="rv" id="m-banco" style="color:var(--transf);">$0</div>
-          <div class="rs">transferencias − egresos banco</div>
+          <span class="sb-badge" id="pending-badge" style="display:none;">0</span>
         </div>
       </div>
+    </nav>
 
-      <!-- PROMEDIOS -->
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
-        <div class="rcard">
-          <div class="rl">DÍAS CON DATOS</div>
-          <div class="rv" id="m-dias" style="color:var(--text);">0</div>
-        </div>
-        <div class="rcard">
-          <div class="rl">CLIENTES TOTAL</div>
-          <div class="rv" id="m-clientes" style="color:var(--acc);">0</div>
-        </div>
-        <div class="rcard">
-          <div class="rl">INGRESO PROM / DÍA</div>
-          <div class="rv" id="m-prom-dia" style="color:var(--cash);">$0</div>
-        </div>
-        <div class="rcard">
-          <div class="rl">CLIENTES PROM / DÍA</div>
-          <div class="rv" id="m-prom-cli" style="color:var(--acc2);">0</div>
-        </div>
-      </div>
+    <!-- MAIN -->
+    <main class="content">
 
-      <!-- PROYECCION -->
-      <div style="background:var(--s2);border:1px solid var(--acc-border);border-radius:12px;padding:14px 18px;margin-bottom:16px;display:flex;gap:28px;flex-wrap:wrap;align-items:center;">
-        <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--acc);">📈 PROYECCIÓN</div>
-        <div><div style="font-size:10px;color:var(--muted);">Días restantes</div><div style="font-family:'DM Mono',monospace;font-size:15px;" id="m-dias-rest">—</div></div>
-        <div><div style="font-size:10px;color:var(--muted);">Proyección ingresos mes</div><div style="font-family:'DM Mono',monospace;font-size:15px;color:var(--cash);" id="m-proy">$0</div></div>
-        <div><div style="font-size:10px;color:var(--muted);">Proyección clientes mes</div><div style="font-family:'DM Mono',monospace;font-size:15px;color:var(--acc2);" id="m-proy-cli">0</div></div>
-        <div><div style="font-size:10px;color:var(--muted);">Promedio por cliente</div><div style="font-family:'DM Mono',monospace;font-size:15px;color:var(--text);" id="m-prom-cliente">$0</div></div>
-      </div>
-
-      <!-- EGRESOS -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
-        <div class="cfg-section" style="margin-bottom:0;">
-          <div class="cfg-section-title" style="margin-bottom:10px;">Egresos del Panel (automáticos)</div>
-          <div id="m-egr-panel" style="max-height:160px;overflow-y:auto;">
-            <div style="font-size:12px;color:var(--muted);text-align:center;padding:10px;">Sin egresos en el período</div>
+      <!-- ══ INICIO ══ -->
+      <div class="page active" id="page-inicio">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:4px;">
+          <div>
+            <div class="pg-title" id="i-titulo">MES ACTUAL</div>
+            <div class="pg-sub" id="i-sub">Cargando...</div>
           </div>
-          <div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid var(--border);margin-top:6px;font-size:13px;">
-            <span style="color:var(--muted);">Total egresos Panel</span>
-            <span style="font-family:'DM Mono',monospace;color:var(--red);" id="m-egr-panel-total">$0</span>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <select class="msel" id="i-msel" onchange="renderInicio()"></select>
+            <button class="btn btn-g btn-sm" onclick="cerrarMes()">Cerrar Mes</button>
           </div>
         </div>
-        <div class="cfg-section" style="margin-bottom:0;">
-          <div class="cfg-section-title" style="margin-bottom:10px;">Mis Egresos</div>
-          <div style="display:grid;grid-template-columns:1fr 90px 80px 32px;gap:6px;margin-bottom:8px;">
-            <input type="text" id="negr-concepto" class="me-inp" placeholder="Concepto">
-            <input type="number" id="negr-monto" class="me-inp" placeholder="Monto">
-            <select id="negr-origen" class="me-inp">
-              <option value="efectivo">💵 Efectivo</option>
-              <option value="banco">🏦 Banco</option>
-            </select>
-            <button class="btn-acc" onclick="addMisEgr()" style="padding:0;border-radius:6px;font-size:18px;line-height:1;">+</button>
+
+        <div class="cr cr3">
+          <div class="card c-acc" style="border-color:var(--acc-border);">
+            <div class="cl">💰 Caja Total</div>
+            <div class="cv" id="i-total">$0</div>
+            <div class="cs" id="i-total-sub">—</div>
           </div>
-          <div id="m-egr-manual" style="max-height:120px;overflow-y:auto;">
-            <div style="font-size:12px;color:var(--muted);text-align:center;padding:10px;">Sin egresos cargados</div>
+          <div class="card c-cash" style="border-color:rgba(92,184,138,.25);">
+            <div class="cl">💵 Efectivo en Caja</div>
+            <div class="cv" id="i-ef">$0</div>
+            <div class="cs">efectivo − egresos efectivo</div>
           </div>
-          <div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid var(--border);margin-top:6px;font-size:13px;">
-            <span style="color:var(--muted);">Total mis egresos</span>
-            <span style="font-family:'DM Mono',monospace;color:var(--red);" id="m-egr-manual-total">$0</span>
+          <div class="card c-transf" style="border-color:rgba(112,144,192,.25);">
+            <div class="cl">🏦 Saldo Banco</div>
+            <div class="cv" id="i-banco">$0</div>
+            <div class="cs">transferencias − egresos banco</div>
+          </div>
+        </div>
+
+        <div class="cr cr4">
+          <div class="card c-text">
+            <div class="cl">Días con datos</div>
+            <div class="cv" id="i-dias">0</div>
+          </div>
+          <div class="card c-acc">
+            <div class="cl">Clientes total</div>
+            <div class="cv" id="i-cli">0</div>
+          </div>
+          <div class="card c-cash">
+            <div class="cl">Ingreso prom / día</div>
+            <div class="cv" id="i-pdia">$0</div>
+          </div>
+          <div class="card c-acc2">
+            <div class="cl">Clientes prom / día</div>
+            <div class="cv" id="i-pcli">0</div>
+            <div class="cs" id="i-pcli2">$0 / cliente</div>
+          </div>
+        </div>
+
+        <div class="pbar" id="i-pbar">
+          <span class="plbl">📈 Proyección</span>
+          <div class="pi"><div class="pl">Días restantes</div><div class="pv" id="i-drest">—</div></div>
+          <div class="pi"><div class="pl">Ingresos proyectados</div><div class="pv" style="color:var(--cash);" id="i-proy">$0</div></div>
+          <div class="pi"><div class="pl">Clientes proyectados</div><div class="pv" style="color:var(--acc2);" id="i-pcliroy">0</div></div>
+        </div>
+
+        <div class="sbox">
+          <div class="sbox-t">Detalle Diario</div>
+          <div style="overflow-x:auto;">
+            <table class="dt">
+              <thead><tr>
+                <th>Día</th>
+                <th>Mañana $</th><th>cli</th>
+                <th>Tarde $</th><th>cli</th>
+                <th>Noche $</th><th>cli</th>
+                <th style="color:var(--acc);">Total</th>
+                <th style="color:var(--acc2);">Clientes</th>
+              </tr></thead>
+              <tbody id="i-tbody"></tbody>
+            </table>
           </div>
         </div>
       </div>
 
-      <!-- TABLA DIARIA -->
-      <div class="cfg-section" style="margin-bottom:0;">
-        <div class="cfg-section-title">Detalle Diario</div>
-        <div style="overflow-x:auto;">
-          <table class="cierre-table">
-            <thead><tr>
-              <th>Día</th>
-              <th>Mañana $</th><th>cli</th>
-              <th>Tarde $</th><th>cli</th>
-              <th>Noche $</th><th>cli</th>
-              <th style="color:var(--acc);">Total día</th>
-              <th style="color:var(--acc2);">Clientes</th>
-            </tr></thead>
-            <tbody id="m-tabla-body"></tbody>
-          </table>
+      <!-- ══ CIERRES ══ -->
+      <div class="page" id="page-cierres">
+        <div class="pg-title">Cierres de Caja</div>
+        <div class="pg-sub">Historial completo. Hacé clic en ✏️ para editar un cierre.</div>
+        <div class="fbar">
+          <button class="fbtn active" id="fb-hoy" onclick="setFiltro('hoy')">Hoy</button>
+          <button class="fbtn" id="fb-semana" onclick="setFiltro('semana')">Esta semana</button>
+          <button class="fbtn" id="fb-mes" onclick="setFiltro('mes')">Este mes</button>
+          <button class="fbtn" id="fb-custom" onclick="setFiltro('custom')">Personalizado</button>
+          <div id="custom-dates" style="display:none;gap:6px;align-items:center;">
+            <input type="date" class="date-inp" id="date-from">
+            <span style="color:var(--muted);">→</span>
+            <input type="date" class="date-inp" id="date-to">
+            <button class="fbtn" onclick="applyCustom()">Aplicar</button>
+          </div>
+        </div>
+        <div class="cr cr4" id="c-resumen" style="margin-bottom:14px;"></div>
+        <div class="sbox" style="padding:0;overflow:hidden;">
+          <div style="overflow-x:auto;">
+            <table class="dt" id="c-table">
+              <thead><tr>
+                <th>Fecha</th><th>Operador</th><th>Turno</th><th>Clientes</th>
+                <th>Efectivo</th><th>Transf.</th><th>Egresos</th><th>Sobre</th><th></th>
+              </tr></thead>
+              <tbody id="c-tbody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
 
-    </div><!-- fin resumen mes -->
+      <!-- ══ EGRESOS ══ -->
+      <div class="page" id="page-egresos">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:22px;">
+          <div>
+            <div class="pg-title">Egresos</div>
+            <div class="pg-sub">Egresos automáticos del Panel y tus egresos manuales.</div>
+          </div>
+          <select class="msel" id="e-msel" onchange="renderEgresos()"></select>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+          <div class="sbox">
+            <div class="sbox-t">Del Panel (automáticos)</div>
+            <div id="e-panel-lista"><div class="empty">Sin egresos en el período</div></div>
+            <div class="div"></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;">
+              <span style="color:var(--muted);">Total</span>
+              <span class="tr" id="e-panel-total">$0</span>
+            </div>
+          </div>
+          <div class="sbox">
+            <div class="sbox-t">Mis Egresos</div>
+            <div style="display:grid;grid-template-columns:1fr 90px 80px 34px;gap:6px;margin-bottom:10px;">
+              <input type="text" class="inp" id="negr-concepto" placeholder="Concepto">
+              <input type="number" class="inp" id="negr-monto" placeholder="Monto">
+              <select class="inp" id="negr-origen">
+                <option value="efectivo">💵 Efectivo</option>
+                <option value="banco">🏦 Banco</option>
+              </select>
+              <button class="btn btn-p" onclick="addMisEgr()" style="padding:0;border-radius:6px;font-size:18px;line-height:1;">+</button>
+            </div>
+            <div id="e-manual-lista"><div class="empty">Sin egresos cargados</div></div>
+            <div class="div"></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;">
+              <span style="color:var(--muted);">Total</span>
+              <span class="tr" id="e-manual-total">$0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ HISTORIAL MESES ══ -->
+      <div class="page" id="page-historial">
+        <div class="pg-title">Historial de Meses</div>
+        <div class="pg-sub">Meses cerrados con su resumen.</div>
+        <div id="hist-lista"><div class="empty">Sin meses cerrados aún.</div></div>
+      </div>
+
+      <!-- ══ CONFIG ══ -->
+      <div class="page" id="page-config">
+        <div class="pg-title">Configuración</div>
+        <div class="pg-sub">Tarifas, habitaciones y menú de consumos.</div>
+
+        <div class="sbox">
+          <div class="sbox-t">Tarifas por Categoría</div>
+          <div class="cfg-grid">
+            <div class="pb esp">
+              <div class="pb-t">★ Especial</div>
+              <div class="cfg-row"><label>Precio base (2 hs)</label><input type="number" id="cfg-esp-base" class="cfg-inp"></div>
+              <div class="cfg-row"><label>Adicional cada 30 min</label><input type="number" id="cfg-esp-extra" class="cfg-inp"></div>
+            </div>
+            <div class="pb sim">
+              <div class="pb-t">◇ Simple</div>
+              <div class="cfg-row"><label>Precio base (2 hs)</label><input type="number" id="cfg-sim-base" class="cfg-inp"></div>
+              <div class="cfg-row"><label>Adicional cada 30 min</label><input type="number" id="cfg-sim-extra" class="cfg-inp"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sbox">
+          <div class="sbox-t">Categoría por Habitación</div>
+          <div class="rgrid" id="room-grid"></div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px;">Tocá para alternar entre ★ Especial y ◇ Simple</div>
+        </div>
+
+        <div class="sbox">
+          <div class="sbox-t">Menú de Consumos</div>
+          <div id="menu-edit" style="max-height:320px;overflow-y:auto;padding-right:4px;margin-bottom:8px;"></div>
+          <button class="add-btn" onclick="addMI()">+ Agregar ítem</button>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:12px;">
+          <button class="btn btn-p" onclick="saveCfg()">Guardar Configuración</button>
+          <span class="save-ok" id="save-ok">✓ Guardado</span>
+        </div>
+      </div>
+
+    </main>
   </div>
+</div>
 
-  <!-- CONFIG -->
-  <div class="page" id="page-config">
-
-    <!-- Tarifas -->
-    <div class="cfg-section">
-      <div class="cfg-section-title">Tarifas por Categoría</div>
-      <div class="price-grid">
-        <div class="price-cat-block esp-block">
-          <div class="price-cat-title">★ Especial</div>
-          <div class="cfg-row"><label>Precio base (primeras 2 hs)</label><input type="number" id="cfg-esp-base" class="cfg-inp"></div>
-          <div class="cfg-row"><label>Adicional cada 30 min</label><input type="number" id="cfg-esp-extra" class="cfg-inp"></div>
-        </div>
-        <div class="price-cat-block sim-block">
-          <div class="price-cat-title">◇ Simple</div>
-          <div class="cfg-row"><label>Precio base (primeras 2 hs)</label><input type="number" id="cfg-sim-base" class="cfg-inp"></div>
-          <div class="cfg-row"><label>Adicional cada 30 min</label><input type="number" id="cfg-sim-extra" class="cfg-inp"></div>
-        </div>
+<!-- MODAL EDITAR CIERRE -->
+<div class="modal" id="modal-edit">
+  <div class="mbox">
+    <div class="mbox-t">Editar Cierre</div>
+    <input type="hidden" id="edit-idx">
+    <div class="g2">
+      <div><label class="flbl">Operador</label><input type="text" class="inp" id="edit-op"></div>
+      <div><label class="flbl">Turno</label>
+        <select class="inp" id="edit-turno">
+          <option>Mañana</option><option>Tarde</option><option>Noche</option>
+        </select>
       </div>
     </div>
-
-    <!-- Categoría por habitación -->
-    <div class="cfg-section">
-      <div class="cfg-section-title">Categoría por Habitación</div>
-      <div class="room-assign-grid" id="room-assign-grid"></div>
-      <div class="ra-hint">Tocá para alternar entre ★ Especial y ◇ Simple</div>
+    <div class="g2">
+      <div><label class="flbl">Clientes</label><input type="number" class="inp" id="edit-cli"></div>
+      <div><label class="flbl">Efectivo</label><input type="number" class="inp" id="edit-ef"></div>
     </div>
-
-    <!-- Menú de consumos -->
-    <div class="cfg-section">
-      <div class="cfg-section-title">Menú de Consumos</div>
-      <div id="menu-edit" style="max-height:320px;overflow-y:auto;padding-right:4px;"></div>
-      <button class="add-mi" onclick="addMI()">+ Agregar ítem</button>
+    <div class="g2">
+      <div><label class="flbl">Transferencia</label><input type="number" class="inp" id="edit-transf"></div>
+      <div><label class="flbl">Egresos total</label><input type="number" class="inp" id="edit-egr"></div>
     </div>
-
-    <div style="display:flex;align-items:center;gap:12px;margin-top:4px;">
-      <button class="btn-acc" onclick="saveCfg()">Guardar Configuración</button>
-      <span class="save-ok" id="save-ok">✓ Guardado</span>
+    <div style="font-size:11px;color:var(--muted);margin-top:4px;">Los cambios se guardan localmente. Si necesitás actualizar la Sheet, editá manualmente.</div>
+    <div class="mfoot">
+      <button class="btn btn-g" onclick="closeModal('modal-edit')">Cancelar</button>
+      <button class="btn btn-p" onclick="saveEdit()">Guardar</button>
     </div>
-
   </div>
-
-
-
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw6zyOhiDl04P0mjrQF4ZfEgfET1B7lB0jOO5QJ4FHmCT2joKQWnXhO0KYuTXDU6tTmgw/exec';
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbw6zyOhiDl04P0mjrQF4ZfEgfET1B7lB0jOO5QJ4FHmCT2joKQWnXhO0KYuTXDU6tTmgw/exec';
 
-// ══ PIN ══
-let _pinBuf = '';
-function pinPress(d){if(_pinBuf.length>=8)return;_pinBuf+=d;updatePinDisplay();}
-function pinDel(){_pinBuf=_pinBuf.slice(0,-1);updatePinDisplay();}
-function updatePinDisplay(){
-  const el=document.getElementById('pin-display');
-  el.textContent=_pinBuf?'●'.repeat(_pinBuf.length):'_ _ _ _';
-}
+// PIN
+let _pin='';
+function pinPress(d){if(_pin.length>=8)return;_pin+=d;updPin();}
+function pinDel(){_pin=_pin.slice(0,-1);updPin();}
+function updPin(){document.getElementById('pin-display').textContent=_pin?'●'.repeat(_pin.length):'_ _ _ _';}
 function pinOk(){
-  if(_pinBuf==='9818'){
+  if(_pin==='9818'){
     document.getElementById('pin-screen').style.display='none';
     document.getElementById('app').style.display='block';
     initApp();
-  } else {
+  }else{
     document.getElementById('pin-err').textContent='Clave incorrecta';
-    _pinBuf='';updatePinDisplay();
+    _pin='';updPin();
     setTimeout(()=>{document.getElementById('pin-err').textContent='';},2000);
   }
 }
@@ -447,526 +523,450 @@ document.addEventListener('keydown',e=>{
   }
 });
 
-// ══ API ══
-async function api(action, data={}){
+// API
+async function api(action,data={}){
   try{
-    const res=await fetch(SCRIPT_URL,{method:'POST',redirect:'follow',
+    const r=await fetch(SCRIPT_URL,{method:'POST',redirect:'follow',
       headers:{'Content-Type':'text/plain;charset=utf-8'},
       body:JSON.stringify({action,...data})});
-    return await res.json();
+    return await r.json();
   }catch(e){return{ok:false,error:e.toString()};}
 }
 
-// ══ STATE ══
-let ALL_CIERRES = [];
-let CFG = {
-  prices:{esp:{base:6000,extra:2000},sim:{base:5000,extra:1500}},
-  cats:{1:'sim',2:'sim',3:'esp',4:'esp',5:'esp',9:'esp',10:'esp',11:'sim',12:'sim'},
-  menu:[],
-};
-let PERIOD = 'hoy';
-let PENDING = [];
+// STATE
+let ALL=[];
+let PENDING=[];
+let CFG={prices:{esp:{base:6000,extra:2000},sim:{base:5000,extra:1500}},cats:{1:'sim',2:'sim',3:'esp',4:'esp',5:'esp',9:'esp',10:'esp',11:'sim',12:'sim'},menu:[]};
+let FILTRO='hoy';
+let MESES_CER=[];
 
+// INIT
 async function initApp(){
-  // cargar pendientes offline del localStorage
   try{const p=localStorage.getItem('motel_pending');if(p)PENDING=JSON.parse(p);}catch(e){}
-  if(PENDING.length>0){
-    document.getElementById('pending-notice').style.display='block';
-    document.getElementById('sync-dot').className='sync-dot pending';
-  }
+  try{const m=localStorage.getItem('motel_meses_cer');if(m)MESES_CER=JSON.parse(m);}catch(e){}
+  updPendBadge();
 
-  // cargar config
-  const cfgRes = await api('getConfig');
-  if(cfgRes.ok && cfgRes.prices){
-    CFG.prices = cfgRes.prices;
-    CFG.cats = cfgRes.cats || CFG.cats;
-    CFG.menu = cfgRes.menu || CFG.menu;
-    populateCfgForm();
-    renderRoomAssign();
-    renderMenuEdit();
-  } else {
-    // fallback: mostrar valores por defecto igual
-    populateCfgForm();
-    renderRoomAssign();
-    renderMenuEdit();
-    toast('No se pudo cargar config del servidor','ty');
-  }
+  const cfgR=await api('getConfig');
+  if(cfgR.ok&&cfgR.prices){CFG.prices=cfgR.prices;CFG.cats=cfgR.cats||CFG.cats;CFG.menu=cfgR.menu||CFG.menu;}
+  popCfgForm();renderRoomGrid();renderMenuEdit();
 
-  // cargar cierres
-  await loadCierres();
-  // verificar pendientes en el servidor
-  await checkPendientes();
+  const r=await api('getCierres');
+  if(r.ok)ALL=r.cierres;
+
+  initMsels();
+  renderInicio();
+  renderCierres();
+  renderEgresos();
+  renderHistorial();
+  await checkPend();
 }
 
-async function loadCierres(){
-  const res = await api('getCierres');
-  if(res.ok){
-    ALL_CIERRES = res.cierres;
-    renderBalance();
-    initMesSelect();
-    renderMes();
-  } else {
-    document.getElementById('meses-container').innerHTML='<div class="empty-state">Error al cargar datos. Verificá la conexión.</div>';
-  }
+// NAV
+function goTo(p){
+  document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(e=>e.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.getElementById('nav-'+p).classList.add('active');
 }
 
-// ══ MIS EGRESOS (localStorage por mes) ══
-function getMisEgrKey(mesKey){ return 'motel_egr_'+mesKey; }
-function getMisEgr(mesKey){
-  try{ const d=localStorage.getItem(getMisEgrKey(mesKey)); return d?JSON.parse(d):[]; }catch(e){return [];}
-}
-function saveMisEgr(mesKey,arr){
-  try{localStorage.setItem(getMisEgrKey(mesKey),JSON.stringify(arr));}catch(e){}
-}
-
-function addMisEgr(){
-  const concepto=document.getElementById('negr-concepto').value.trim();
-  const monto=parseInt(document.getElementById('negr-monto').value)||0;
-  const origen=document.getElementById('negr-origen').value;
-  if(!concepto||!monto){toast('Completá concepto y monto','ty');return;}
-  const mesKey=document.getElementById('mes-select').value;
-  const arr=getMisEgr(mesKey);
-  arr.push({concepto,monto,origen,fecha:new Date().toISOString().slice(0,10)});
-  saveMisEgr(mesKey,arr);
-  document.getElementById('negr-concepto').value='';
-  document.getElementById('negr-monto').value='';
-  renderMes();
-  toast('Egreso guardado','tg');
-}
-
-function delMisEgr(mesKey,idx){
-  const arr=getMisEgr(mesKey);
-  arr.splice(idx,1);
-  saveMisEgr(mesKey,arr);
-  renderMes();
-}
-
-function initMesSelect(){
-  const sel=document.getElementById('mes-select');
-  // recolectar meses disponibles de cierres
-  const meses=new Set();
+// MES SELECTS
+function initMsels(){
   const now=new Date();
-  // siempre incluir mes actual
-  meses.add(now.toISOString().slice(0,7));
-  ALL_CIERRES.forEach(c=>{
-    const f=(c['Fecha']||'').slice(0,7);
-    if(f) meses.add(f);
-  });
-  const sorted=[...meses].sort().reverse();
-  sel.innerHTML=sorted.map(m=>{
-    const [y,mo]=m.split('-');
-    const label=new Date(y,parseInt(mo)-1,1).toLocaleDateString('es-AR',{month:'long',year:'numeric'}).toUpperCase();
-    return `<option value="${m}">${label}</option>`;
+  const set=new Set();
+  set.add(now.toISOString().slice(0,7));
+  ALL.forEach(c=>{const f=(c['Fecha']||'').slice(0,7);if(f)set.add(f);});
+  const sorted=[...set].sort().reverse();
+  const html=sorted.map(m=>{
+    const[y,mo]=m.split('-');
+    const lbl=new Date(y,parseInt(mo)-1,1).toLocaleDateString('es-AR',{month:'long',year:'numeric'}).toUpperCase();
+    return`<option value="${m}">${lbl}</option>`;
   }).join('');
+  ['i-msel','e-msel'].forEach(id=>document.getElementById(id).innerHTML=html);
 }
 
-function renderMes(){
-  const mesKey=document.getElementById('mes-select').value;
-  if(!mesKey) return;
-  const [y,mo]=mesKey.split('-');
-  const year=parseInt(y), month=parseInt(mo);
-  const diasEnMes=new Date(year,month,0).getDate();
-  const hoy=new Date();
-  const esMesActual=(hoy.getFullYear()===year&&hoy.getMonth()+1===month);
-  const diaActual=esMesActual?hoy.getDate():diasEnMes;
+// INICIO
+function renderInicio(){
+  const mk=document.getElementById('i-msel').value;
+  if(!mk)return;
+  const[y,mo]=mk.split('-');
+  const year=parseInt(y),month=parseInt(mo);
+  const dim=new Date(year,month,0).getDate();
+  const now=new Date();
+  const isCurrent=(now.getFullYear()===year&&now.getMonth()+1===month);
+  const dayNow=isCurrent?now.getDate():dim;
 
-  // título
-  document.getElementById('mes-titulo').textContent=
-    '— '+new Date(year,month-1,1).toLocaleDateString('es-AR',{month:'long',year:'numeric'}).toUpperCase()+' —';
+  document.getElementById('i-titulo').textContent=
+    new Date(year,month-1,1).toLocaleDateString('es-AR',{month:'long',year:'numeric'}).toUpperCase();
+  document.getElementById('i-sub').textContent=isCurrent?'Mes en curso':'Mes cerrado';
 
-  // filtrar cierres del mes
-  const cierres=ALL_CIERRES.filter(c=>(c['Fecha']||'').slice(0,7)===mesKey);
+  const cierres=ALL.filter(c=>(c['Fecha']||'').slice(0,7)===mk);
+  let ef=0,ba=0,cli=0;
+  cierres.forEach(c=>{ef+=Number(c['Efectivo'])||0;ba+=Number(c['Transferencia'])||0;cli+=Number(c['Clientes'])||0;});
+  const total=ef+ba;
 
-  // totales caja
-  let totalEf=0,totalBanco=0,totalClientes=0;
-  cierres.forEach(c=>{
-    totalEf+=Number(c['Efectivo'])||0;
-    totalBanco+=Number(c['Transferencia'])||0;
-    totalClientes+=Number(c['Clientes'])||0;
-  });
-  const totalIngreso=totalEf+totalBanco;
+  let egrPanel=0;
+  cierres.forEach(c=>{const eg=c['Detalle Egresos'];if(Array.isArray(eg))eg.forEach(e=>{egrPanel+=Number(e.monto)||0;});});
 
-  // egresos del panel (del detalle de egresos de cada cierre)
-  let egrPanelArr=[];
-  let egrPanelTotal=0;
-  cierres.forEach(c=>{
-    const egrs=c['Detalle Egresos'];
-    if(Array.isArray(egrs)){
-      egrs.forEach(e=>{
-        egrPanelArr.push({concepto:e.concepto,monto:e.monto,fecha:(c['Fecha']||'').slice(0,10)});
-        egrPanelTotal+=Number(e.monto)||0;
-      });
-    }
-  });
+  const mis=getMisEgr(mk);
+  let misEf=0,misBa=0;
+  mis.forEach(e=>{if(e.origen==='efectivo')misEf+=e.monto;else misBa+=e.monto;});
 
-  // mis egresos
-  const misEgrs=getMisEgr(mesKey);
-  let misEgrEf=0,misEgrBanco=0,misEgrTotal=0;
-  misEgrs.forEach(e=>{
-    misEgrTotal+=e.monto;
-    if(e.origen==='efectivo') misEgrEf+=e.monto;
-    else misEgrBanco+=e.monto;
-  });
+  const efN=ef-egrPanel-misEf;
+  const baN=ba-misBa;
+  const dias=new Set(cierres.map(c=>(c['Fecha']||'').slice(0,10))).size;
+  const pDia=dias>0?Math.round(total/dias):0;
+  const pCli=dias>0?(cli/dias).toFixed(1):0;
+  const pCliente=cli>0?Math.round(total/cli):0;
+  const dRest=isCurrent?dim-dayNow:0;
+  const proy=isCurrent&&dias>0?Math.round(total+pDia*dRest):total;
+  const proyCli=isCurrent&&dias>0?Math.round(cli+parseFloat(pCli)*dRest):cli;
 
-  // caja neta
-  const efNeto=totalEf-egrPanelTotal-misEgrEf;
-  const bancoNeto=totalBanco-misEgrBanco;
-
-  // promedios
-  const diasConDatos=new Set(cierres.map(c=>(c['Fecha']||'').slice(0,10))).size;
-  const promDia=diasConDatos>0?Math.round(totalIngreso/diasConDatos):0;
-  const promCli=diasConDatos>0?(totalClientes/diasConDatos).toFixed(1):0;
-  const promCliente=totalClientes>0?Math.round(totalIngreso/totalClientes):0;
-
-  // proyección solo si es mes actual
-  const diasRestantes=esMesActual?diasEnMes-diaActual:0;
-  const proyIngreso=esMesActual&&diasConDatos>0?Math.round(totalIngreso+(promDia*diasRestantes)):totalIngreso;
-  const proyCli=esMesActual&&diasConDatos>0?Math.round(totalClientes+(parseFloat(promCli)*diasRestantes)):totalClientes;
-
-  // render caja
-  document.getElementById('m-total').textContent='$'+totalIngreso.toLocaleString('es-AR');
-  document.getElementById('m-total-sub').textContent=cierres.length+' cierres registrados';
-  document.getElementById('m-efectivo').textContent='$'+efNeto.toLocaleString('es-AR');
-  document.getElementById('m-banco').textContent='$'+bancoNeto.toLocaleString('es-AR');
-
-  // promedios
-  document.getElementById('m-dias').textContent=diasConDatos;
-  document.getElementById('m-clientes').textContent=totalClientes;
-  document.getElementById('m-prom-dia').textContent='$'+promDia.toLocaleString('es-AR');
-  document.getElementById('m-prom-cli').textContent=promCli;
-
-  // proyección
-  document.getElementById('m-dias-rest').textContent=esMesActual?diasRestantes+' días':'mes cerrado';
-  document.getElementById('m-proy').textContent='$'+proyIngreso.toLocaleString('es-AR');
-  document.getElementById('m-proy-cli').textContent=proyCli;
-  document.getElementById('m-prom-cliente').textContent='$'+promCliente.toLocaleString('es-AR');
-
-  // egresos panel
-  const egrPanelEl=document.getElementById('m-egr-panel');
-  if(egrPanelArr.length===0){
-    egrPanelEl.innerHTML='<div style="font-size:12px;color:var(--muted);text-align:center;padding:10px;">Sin egresos en el período</div>';
-  } else {
-    egrPanelEl.innerHTML=egrPanelArr.map(e=>`
-      <div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid var(--border);">
-        <span style="color:var(--text);">${e.fecha} — ${e.concepto}</span>
-        <span style="font-family:'DM Mono',monospace;color:var(--red);">−$${Number(e.monto).toLocaleString('es-AR')}</span>
-      </div>`).join('');
-  }
-  document.getElementById('m-egr-panel-total').textContent='−$'+egrPanelTotal.toLocaleString('es-AR');
-
-  // mis egresos
-  const misEgrEl=document.getElementById('m-egr-manual');
-  if(misEgrs.length===0){
-    misEgrEl.innerHTML='<div style="font-size:12px;color:var(--muted);text-align:center;padding:10px;">Sin egresos cargados</div>';
-  } else {
-    misEgrEl.innerHTML=misEgrs.map((e,i)=>`
-      <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:4px 0;border-bottom:1px solid var(--border);">
-        <span>${e.fecha} — ${e.concepto} <span style="font-size:10px;color:var(--muted);">(${e.origen==='efectivo'?'💵':'🏦'})</span></span>
-        <div style="display:flex;gap:8px;align-items:center;">
-          <span style="font-family:'DM Mono',monospace;color:var(--red);">−$${e.monto.toLocaleString('es-AR')}</span>
-          <button onclick="delMisEgr('${mesKey}',${i})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;">✕</button>
-        </div>
-      </div>`).join('');
-  }
-  document.getElementById('m-egr-manual-total').textContent='−$'+misEgrTotal.toLocaleString('es-AR');
+  document.getElementById('i-total').textContent='$'+total.toLocaleString('es-AR');
+  document.getElementById('i-total-sub').textContent=cierres.length+' cierres registrados';
+  document.getElementById('i-ef').textContent='$'+efN.toLocaleString('es-AR');
+  document.getElementById('i-banco').textContent='$'+baN.toLocaleString('es-AR');
+  document.getElementById('i-dias').textContent=dias;
+  document.getElementById('i-cli').textContent=cli;
+  document.getElementById('i-pdia').textContent='$'+pDia.toLocaleString('es-AR');
+  document.getElementById('i-pcli').textContent=pCli;
+  document.getElementById('i-pcli2').textContent='$'+pCliente.toLocaleString('es-AR')+' / cliente';
+  document.getElementById('i-drest').textContent=isCurrent?dRest+' días':'mes cerrado';
+  document.getElementById('i-proy').textContent='$'+proy.toLocaleString('es-AR');
+  document.getElementById('i-pcliroy').textContent=proyCli;
 
   // tabla diaria
-  const TURNOS=['Mañana','Tarde','Noche'];
-  // mapear cierres por fecha+turno
   const mapa={};
   cierres.forEach(c=>{
     const fecha=(c['Fecha']||'').slice(0,10);
-    const turno=(c['Turno']||'').toLowerCase();
-    const t=TURNOS.find(t=>turno.includes(t.toLowerCase()))||c['Turno']||'';
-    if(!mapa[fecha]) mapa[fecha]={};
-    mapa[fecha][t]={monto:(Number(c['Efectivo'])||0)+(Number(c['Transferencia'])||0),clientes:Number(c['Clientes'])||0};
+    const tr=(c['Turno']||'').toLowerCase();
+    const t=tr.includes('ma')?'Mañana':tr.includes('tard')?'Tarde':'Noche';
+    if(!mapa[fecha])mapa[fecha]={};
+    mapa[fecha][t]={m:(Number(c['Efectivo'])||0)+(Number(c['Transferencia'])||0),c:Number(c['Clientes'])||0};
   });
 
-  // generar filas para cada día del mes
-  const tbody=document.getElementById('m-tabla-body');
+  const DS=['dom','lun','mar','mié','jue','vie','sáb'];
   let rows='';
-  const diasSemana=['dom','lun','mar','mié','jue','vie','sáb'];
-  for(let d=1;d<=diasEnMes;d++){
+  for(let d=1;d<=dim;d++){
     const fecha=`${y}-${mo.padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const esDia=mapa[fecha]||{};
-    const man=esDia['Mañana']||null;
-    const tar=esDia['Tarde']||null;
-    const noc=esDia['Noche']||null;
-    const totalDia=(man?man.monto:0)+(tar?tar.monto:0)+(noc?noc.monto:0);
-    const clientesDia=(man?man.clientes:0)+(tar?tar.clientes:0)+(noc?noc.clientes:0);
-    const esHoy=esMesActual&&d===diaActual;
-    const diaSem=diasSemana[new Date(year,month-1,d).getDay()];
-    const hayDatos=man||tar||noc;
-    rows+=`<tr style="${esHoy?'background:rgba(200,184,154,.06);':''}${!hayDatos&&d<diaActual?'opacity:0.4;':''}">
-      <td class="td-mono" style="color:var(--muted);white-space:nowrap;">${diaSem} ${d}</td>
-      <td class="td-mono" style="color:var(--cash);">${man?'$'+man.monto.toLocaleString('es-AR'):'—'}</td>
-      <td class="td-mono">${man?man.clientes:'—'}</td>
-      <td class="td-mono" style="color:var(--cash);">${tar?'$'+tar.monto.toLocaleString('es-AR'):'—'}</td>
-      <td class="td-mono">${tar?tar.clientes:'—'}</td>
-      <td class="td-mono" style="color:var(--cash);">${noc?'$'+noc.monto.toLocaleString('es-AR'):'—'}</td>
-      <td class="td-mono">${noc?noc.clientes:'—'}</td>
-      <td class="td-mono" style="color:var(--acc);font-weight:600;">${totalDia>0?'$'+totalDia.toLocaleString('es-AR'):'—'}</td>
-      <td class="td-mono" style="color:var(--acc2);">${clientesDia>0?clientesDia:'—'}</td>
+    const dd=mapa[fecha]||{};
+    const ma=dd['Mañana']||null,ta=dd['Tarde']||null,no=dd['Noche']||null;
+    const tot=(ma?ma.m:0)+(ta?ta.m:0)+(no?no.m:0);
+    const ct=(ma?ma.c:0)+(ta?ta.c:0)+(no?no.c:0);
+    const isHoy=isCurrent&&d===dayNow;
+    const ds=DS[new Date(year,month-1,d).getDay()];
+    const hay=ma||ta||no;
+    rows+=`<tr style="${isHoy?'background:rgba(200,184,154,.06);':''}${!hay&&d<dayNow?'opacity:0.35;':''}">
+      <td class="tm" style="color:var(--muted);white-space:nowrap;">${ds} ${d}</td>
+      <td class="tc">${ma?'$'+ma.m.toLocaleString('es-AR'):'—'}</td><td class="tm">${ma?ma.c:'—'}</td>
+      <td class="tc">${ta?'$'+ta.m.toLocaleString('es-AR'):'—'}</td><td class="tm">${ta?ta.c:'—'}</td>
+      <td class="tc">${no?'$'+no.m.toLocaleString('es-AR'):'—'}</td><td class="tm">${no?no.c:'—'}</td>
+      <td class="ta" style="font-weight:600;">${tot>0?'$'+tot.toLocaleString('es-AR'):'—'}</td>
+      <td class="tm" style="color:var(--acc2);">${ct>0?ct:'—'}</td>
     </tr>`;
   }
-  tbody.innerHTML=rows;
+  document.getElementById('i-tbody').innerHTML=rows;
 }
 
-// ══ TABS ══
-function showPage(p){
-  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
-  document.querySelectorAll('.htab').forEach(el=>el.classList.remove('active'));
-  document.getElementById('page-'+p).classList.add('active');
-  document.getElementById('htab-'+p).classList.add('active');
+function cerrarMes(){
+  const mk=document.getElementById('i-msel').value;
+  if(!mk)return;
+  if(MESES_CER.includes(mk)){toast('Este mes ya está cerrado','ta');return;}
+  if(!confirm('¿Cerrar el mes? Se moverá al historial.'))return;
+  MESES_CER.push(mk);
+  try{localStorage.setItem('motel_meses_cer',JSON.stringify(MESES_CER));}catch(e){}
+  renderHistorial();
+  toast('Mes cerrado y guardado en historial','tg');
 }
 
-// ══ BALANCE ══
-function setPeriod(p){
-  PERIOD=p;
-  document.querySelectorAll('.pbtn[id^="pb-"]').forEach(b=>b.classList.remove('active'));
-  document.getElementById('pb-'+p).classList.add('active');
-  document.getElementById('custom-dates').style.display=p==='custom'?'flex':'none';
-  if(p!=='custom') renderBalance();
+// CIERRES
+function setFiltro(f){
+  FILTRO=f;
+  ['hoy','semana','mes','custom'].forEach(x=>document.getElementById('fb-'+x).classList.toggle('active',x===f));
+  document.getElementById('custom-dates').style.display=f==='custom'?'flex':'none';
+  if(f!=='custom')renderCierres();
 }
-function applyCustom(){PERIOD='custom';renderBalance();}
+function applyCustom(){FILTRO='custom';renderCierres();}
 
-function getFilteredCierres(){
-  const now = new Date();
-  const todayStr = now.toISOString().split('T')[0];
-
-  return ALL_CIERRES.filter(c=>{
-    const f = c['Fecha']||'';
-    if(PERIOD==='hoy') return f.slice(0,10)===todayStr;
-    if(PERIOD==='semana'){
-      const d=new Date(f.slice(0,10)+'T12:00:00');
-      const diff=(now-d)/(1000*60*60*24);
-      return diff>=0&&diff<7;
-    }
-    if(PERIOD==='mes'){
-      return f.slice(0,7)===todayStr.slice(0,7);
-    }
-    if(PERIOD==='custom'){
-      const from=document.getElementById('date-from').value;
+function filtrar(){
+  const now=new Date();
+  const hoy=now.toISOString().split('T')[0];
+  return ALL.filter(c=>{
+    const f=(c['Fecha']||'').slice(0,10);
+    if(FILTRO==='hoy')return f===hoy;
+    if(FILTRO==='semana'){const d=new Date(f+'T12:00:00');return(now-d)/86400000<7&&d<=now;}
+    if(FILTRO==='mes')return f.slice(0,7)===hoy.slice(0,7);
+    if(FILTRO==='custom'){
+      const fr=document.getElementById('date-from').value;
       const to=document.getElementById('date-to').value;
-      if(!from||!to) return true;
-      return f>=from&&f<=to;
+      if(!fr||!to)return true;
+      return f>=fr&&f<=to;
     }
     return true;
   });
 }
 
-function renderBalance(){
-  const filtered = getFilteredCierres();
+function renderCierres(){
+  const cierres=filtrar();
+  let tEf=0,tBa=0,tEgr=0,tCli=0;
+  cierres.forEach(c=>{tEf+=Number(c['Efectivo'])||0;tBa+=Number(c['Transferencia'])||0;tEgr+=Number(c['Egresos'])||0;tCli+=Number(c['Clientes'])||0;});
+  const tot=tEf+tBa;
+  document.getElementById('c-resumen').innerHTML=`
+    <div class="card c-acc"><div class="cl">Total recaudado</div><div class="cv">$${tot.toLocaleString('es-AR')}</div></div>
+    <div class="card c-cash"><div class="cl">Efectivo</div><div class="cv">$${tEf.toLocaleString('es-AR')}</div></div>
+    <div class="card c-transf"><div class="cl">Transferencia</div><div class="cv">$${tBa.toLocaleString('es-AR')}</div></div>
+    <div class="card c-red"><div class="cl">Egresos Panel</div><div class="cv">$${tEgr.toLocaleString('es-AR')}</div></div>`;
 
-  // totales
-  const totalCash = filtered.reduce((a,c)=>a+Number(c['Efectivo']||0),0);
-  const totalTransf = filtered.reduce((a,c)=>a+Number(c['Transferencia']||0),0);
-  const totalEgr = filtered.reduce((a,c)=>a+Number(c['Egresos']||0),0);
-  const total = totalCash+totalTransf;
-  const neto = total-totalEgr;
+  const tb=document.getElementById('c-tbody');
+  if(!cierres.length){tb.innerHTML=`<tr><td colspan="9" class="empty">Sin cierres en el período</td></tr>`;return;}
+  const tc=t=>{const tl=(t||'').toLowerCase();return tl.includes('ma')?'tb-m':tl.includes('tard')?'tb-t':'tb-n';};
+  tb.innerHTML=cierres.map(c=>{
+    const idx=ALL.indexOf(c);
+    const ef=Number(c['Efectivo'])||0;
+    const egr=Number(c['Egresos'])||0;
+    const sobre=ef-egr;
+    const egrs=c['Detalle Egresos'];
+    const egrsH=Array.isArray(egrs)&&egrs.length?egrs.map(e=>`<div style="font-size:11px;color:var(--muted2);">↳ ${e.concepto}: $${Number(e.monto).toLocaleString('es-AR')}</div>`).join(''):'';
+    return`<tr>
+      <td class="tm">${(c['Fecha']||'').slice(0,10)}</td>
+      <td>${c['Operador']||'—'}</td>
+      <td><span class="tbadge ${tc(c['Turno'])}">${c['Turno']||'—'}</span></td>
+      <td class="tm">${c['Clientes']||0}</td>
+      <td class="tc">$${ef.toLocaleString('es-AR')}</td>
+      <td class="tt">$${(Number(c['Transferencia'])||0).toLocaleString('es-AR')}</td>
+      <td class="tr">${egr>0?'$'+egr.toLocaleString('es-AR'):'—'}<div>${egrsH}</div></td>
+      <td class="ta">$${sobre.toLocaleString('es-AR')}</td>
+      <td><button class="bico" onclick="openEdit(${idx})" title="Editar">✏️</button></td>
+    </tr>`;
+  }).join('');
+}
 
-  const pLabels={hoy:'Hoy',semana:'Esta semana',mes:'Este mes',custom:'Período personalizado'};
-  document.getElementById('res-total').textContent='$'+total.toLocaleString('es-AR');
-  document.getElementById('res-cash').textContent='$'+totalCash.toLocaleString('es-AR');
-  document.getElementById('res-transf').textContent='$'+totalTransf.toLocaleString('es-AR');
-  document.getElementById('res-net').textContent='$'+neto.toLocaleString('es-AR');
-  document.getElementById('res-period').textContent=pLabels[PERIOD]||'';
+function openEdit(idx){
+  const c=ALL[idx];
+  document.getElementById('edit-idx').value=idx;
+  document.getElementById('edit-op').value=c['Operador']||'';
+  document.getElementById('edit-turno').value=c['Turno']||'Mañana';
+  document.getElementById('edit-cli').value=c['Clientes']||0;
+  document.getElementById('edit-ef').value=c['Efectivo']||0;
+  document.getElementById('edit-transf').value=c['Transferencia']||0;
+  document.getElementById('edit-egr').value=c['Egresos']||0;
+  openModal('modal-edit');
+}
 
-  // agrupar por mes
-  const mesesMap = {};
-  filtered.forEach(c=>{
-    const f=c['Fecha']||'';
-    const mesKey=f.slice(0,7); // YYYY-MM
-    if(!mesesMap[mesKey]) mesesMap[mesKey]=[];
-    mesesMap[mesKey].push(c);
+function saveEdit(){
+  const idx=parseInt(document.getElementById('edit-idx').value);
+  const c=ALL[idx];
+  c['Operador']=document.getElementById('edit-op').value;
+  c['Turno']=document.getElementById('edit-turno').value;
+  c['Clientes']=parseInt(document.getElementById('edit-cli').value)||0;
+  c['Efectivo']=parseInt(document.getElementById('edit-ef').value)||0;
+  c['Transferencia']=parseInt(document.getElementById('edit-transf').value)||0;
+  c['Egresos']=parseInt(document.getElementById('edit-egr').value)||0;
+  closeModal('modal-edit');
+  renderCierres();renderInicio();
+  toast('Cierre actualizado','tg');
+}
+
+// EGRESOS
+function getMisEgrK(mk){return'motel_egr_'+mk;}
+function getMisEgr(mk){try{const d=localStorage.getItem(getMisEgrK(mk));return d?JSON.parse(d):[]}catch(e){return[];}}
+function saveMisEgr(mk,arr){try{localStorage.setItem(getMisEgrK(mk),JSON.stringify(arr));}catch(e){}}
+
+function addMisEgr(){
+  const con=document.getElementById('negr-concepto').value.trim();
+  const mon=parseInt(document.getElementById('negr-monto').value)||0;
+  const ori=document.getElementById('negr-origen').value;
+  if(!con||!mon){toast('Completá concepto y monto','ty');return;}
+  const mk=document.getElementById('e-msel').value;
+  const arr=getMisEgr(mk);
+  arr.push({concepto:con,monto:mon,origen:ori,fecha:new Date().toISOString().slice(0,10)});
+  saveMisEgr(mk,arr);
+  document.getElementById('negr-concepto').value='';
+  document.getElementById('negr-monto').value='';
+  renderEgresos();renderInicio();
+  toast('Egreso guardado','tg');
+}
+
+function delMisEgr(mk,idx){
+  const arr=getMisEgr(mk);arr.splice(idx,1);saveMisEgr(mk,arr);
+  renderEgresos();renderInicio();
+}
+
+function renderEgresos(){
+  const mk=document.getElementById('e-msel').value;
+  if(!mk)return;
+  const cierres=ALL.filter(c=>(c['Fecha']||'').slice(0,7)===mk);
+  let panArr=[],panTot=0;
+  cierres.forEach(c=>{
+    const eg=c['Detalle Egresos'];
+    if(Array.isArray(eg))eg.forEach(e=>{
+      panArr.push({con:e.concepto,mon:e.monto,fecha:(c['Fecha']||'').slice(0,10)});
+      panTot+=Number(e.monto)||0;
+    });
   });
+  const panEl=document.getElementById('e-panel-lista');
+  panEl.innerHTML=panArr.length?panArr.map(e=>`
+    <div class="egr-row">
+      <span>${e.fecha} — ${e.con}</span>
+      <span class="tr">−$${Number(e.mon).toLocaleString('es-AR')}</span>
+    </div>`).join(''):`<div class="empty">Sin egresos en el período</div>`;
+  document.getElementById('e-panel-total').textContent='−$'+panTot.toLocaleString('es-AR');
 
-  const cont = document.getElementById('meses-container');
-  if(filtered.length===0){cont.innerHTML='<div class="empty-state">No hay cierres en este período</div>';return;}
+  const mis=getMisEgr(mk);
+  let misTot=0;
+  const manEl=document.getElementById('e-manual-lista');
+  manEl.innerHTML=mis.length?mis.map((e,i)=>{
+    misTot+=e.monto;
+    const tag=e.origen==='efectivo'?'<span class="tag tag-ef">💵 Efectivo</span>':'<span class="tag tag-ba">🏦 Banco</span>';
+    return`<div class="egr-row">
+      <span>${e.fecha} — ${e.concepto} ${tag}</span>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="tr">−$${e.monto.toLocaleString('es-AR')}</span>
+        <button class="bico" onclick="delMisEgr('${mk}',${i})">✕</button>
+      </div>
+    </div>`;
+  }).join(''):`<div class="empty">Sin egresos cargados</div>`;
+  document.getElementById('e-manual-total').textContent='−$'+misTot.toLocaleString('es-AR');
+}
 
-  cont.innerHTML = Object.keys(mesesMap).sort().reverse().map(mk=>{
-    const cierres=mesesMap[mk];
-    const mCash=cierres.reduce((a,c)=>a+Number(c['Efectivo']||0),0);
-    const mTransf=cierres.reduce((a,c)=>a+Number(c['Transferencia']||0),0);
-    const mEgr=cierres.reduce((a,c)=>a+Number(c['Egresos']||0),0);
-    const mTotal=mCash+mTransf;
-    const [y,m]=mk.split('-');
-    const meses=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-    const mesNombre=meses[parseInt(m)-1]+' '+y;
-
-    const rows = cierres.map((c,i)=>{
-      const turno=c['Turno']||'';
-      const tbClass=turno==='Mañana'?'tb-m':turno==='Tarde'?'tb-t':'tb-n';
-      const egresos=c['Detalle Egresos']||[];
-      const egrStr=Array.isArray(egresos)&&egresos.length>0
-        ?egresos.map(e=>`${e.concepto}: $${Number(e.monto).toLocaleString('es-AR')}`).join(' · ')
-        :'—';
-      const egrCell=Array.isArray(egresos)&&egresos.length>0
-        ?`<span class="egr-expand" onclick="toggleEgr('egr-${mk}-${i}')">ver detalle</span>
-           <div class="egr-detail" id="egr-${mk}-${i}">${egrStr}</div>`
-        :'—';
-
-      return`<tr>
-        <td class="td-mono">${(c['Fecha']||'').slice(0,10)}</td>
-        <td>${c['Operador']||''}</td>
-        <td><span class="turno-badge ${tbClass}">${turno}</span></td>
-        <td class="td-mono" style="text-align:center;">${c['Clientes']||0}</td>
-        <td class="td-cash">$${Number(c['Efectivo']||0).toLocaleString('es-AR')}</td>
-        <td class="td-transf">$${Number(c['Transferencia']||0).toLocaleString('es-AR')}</td>
-        <td class="td-egr">${Number(c['Egresos']||0)>0?'−$'+Number(c['Egresos']||0).toLocaleString('es-AR'):'—'}</td>
-        <td class="td-sobre">$${Number(c['Sobre']||0).toLocaleString('es-AR')}</td>
-        <td style="font-size:12px;">${egrCell}</td>
-      </tr>`;
-    }).join('');
-
+// HISTORIAL
+function renderHistorial(){
+  const el=document.getElementById('hist-lista');
+  if(!MESES_CER.length){el.innerHTML='<div class="empty">Sin meses cerrados aún.</div>';return;}
+  const sorted=[...MESES_CER].sort().reverse();
+  el.innerHTML=sorted.map(mk=>{
+    const cierres=ALL.filter(c=>(c['Fecha']||'').slice(0,7)===mk);
+    let tot=0,cli=0;
+    cierres.forEach(c=>{tot+=(Number(c['Efectivo'])||0)+(Number(c['Transferencia'])||0);cli+=Number(c['Clientes'])||0;});
+    const[y,mo]=mk.split('-');
+    const lbl=new Date(y,parseInt(mo)-1,1).toLocaleDateString('es-AR',{month:'long',year:'numeric'}).toUpperCase();
+    const id='mc'+mk.replace('-','');
+    const tc=t=>{const tl=(t||'').toLowerCase();return tl.includes('ma')?'tb-m':tl.includes('tard')?'tb-t':'tb-n';};
     return`<div class="mes-block">
-      <div class="mes-header" onclick="toggleMes('mes-${mk}')">
-        <div class="mes-nombre">${mesNombre}</div>
-        <div style="display:flex;align-items:center;gap:20px;">
-          <div class="mes-stats">
-            <div class="mes-stat"><div class="lbl">Total</div><div class="val" style="color:var(--acc)">$${mTotal.toLocaleString('es-AR')}</div></div>
-            <div class="mes-stat"><div class="lbl">Efectivo</div><div class="val" style="color:var(--cash)">$${mCash.toLocaleString('es-AR')}</div></div>
-            <div class="mes-stat"><div class="lbl">Transfer.</div><div class="val" style="color:var(--transf)">$${mTransf.toLocaleString('es-AR')}</div></div>
-            <div class="mes-stat"><div class="lbl">Cierres</div><div class="val">${cierres.length}</div></div>
-          </div>
-          <span class="mes-arrow" id="arr-mes-${mk}">▶</span>
+      <div class="mes-hdr" onclick="togMes('${id}')">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="mes-nom">${lbl}</div>
+          <span class="cer-badge">✓ Cerrado</span>
+        </div>
+        <div class="mes-stats">
+          <div class="mes-stat"><div class="lbl">Total</div><div class="val" style="color:var(--acc);">$${tot.toLocaleString('es-AR')}</div></div>
+          <div class="mes-stat"><div class="lbl">Clientes</div><div class="val">${cli}</div></div>
+          <div class="mes-stat"><div class="lbl">Cierres</div><div class="val">${cierres.length}</div></div>
+          <span class="mes-arr" id="arr${id}">▶</span>
         </div>
       </div>
-      <div class="mes-body" id="mes-${mk}">
-        <div style="overflow-x:auto;">
-          <table class="cierre-table">
-            <thead><tr>
-              <th>Fecha</th><th>Operador</th><th>Turno</th><th>Clientes</th>
-              <th>Efectivo</th><th>Transfer.</th><th>Egresos</th><th>Sobre</th><th>Detalle egresos</th>
-            </tr></thead>
-            <tbody>${rows}</tbody>
-          </table>
-        </div>
+      <div class="mes-body" id="${id}">
+        <table class="dt">
+          <thead><tr><th>Fecha</th><th>Operador</th><th>Turno</th><th>Clientes</th><th>Efectivo</th><th>Transf.</th><th>Sobre</th></tr></thead>
+          <tbody>${cierres.map(c=>{
+            const ef=Number(c['Efectivo'])||0,egr=Number(c['Egresos'])||0;
+            return`<tr>
+              <td class="tm">${(c['Fecha']||'').slice(0,10)}</td>
+              <td>${c['Operador']||'—'}</td>
+              <td><span class="tbadge ${tc(c['Turno'])}">${c['Turno']||'—'}</span></td>
+              <td class="tm">${c['Clientes']||0}</td>
+              <td class="tc">$${ef.toLocaleString('es-AR')}</td>
+              <td class="tt">$${(Number(c['Transferencia'])||0).toLocaleString('es-AR')}</td>
+              <td class="ta">$${(ef-egr).toLocaleString('es-AR')}</td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>
       </div>
     </div>`;
   }).join('');
-
-  // auto-abrir el primer mes si es hoy/semana
-  if(PERIOD==='hoy'||PERIOD==='semana'){
-    const firstKey=Object.keys(mesesMap).sort().reverse()[0];
-    if(firstKey) toggleMes('mes-'+firstKey);
-  }
 }
 
-function toggleMes(id){
-  const body=document.getElementById(id);
-  const arr=document.getElementById('arr-'+id);
-  const isOpen=body.classList.contains('open');
-  body.classList.toggle('open');
-  if(arr)arr.classList.toggle('open',!isOpen);
+function togMes(id){
+  document.getElementById(id).classList.toggle('open');
+  document.getElementById('arr'+id).classList.toggle('open');
 }
-function toggleEgr(id){document.getElementById(id).classList.toggle('open');}
 
-// ══ SYNC PENDIENTES ══
-async function checkPendientes(){
-  // verificar pendientes en el servidor
-  const res=await api('getPendientes');
-  const serverCount=res.ok?res.count:0;
-  // los pendientes del localStorage están en PENDING (cargados en initApp)
-  const total=serverCount+PENDING.length;
-  if(total>0){
-    document.getElementById('pending-notice').style.display='block';
-    document.getElementById('pending-notice').textContent='⚠ '+total+' cierre(s) pendiente(s) de sincronizar';
-    document.getElementById('sync-dot').className='sync-dot pending';
-  }
+// PENDIENTES
+function updPendBadge(){
+  const b=document.getElementById('pending-badge');
+  if(PENDING.length>0){b.style.display='inline';b.textContent=PENDING.length;document.getElementById('sync-dot').className='sync-dot pending';}
+  else{b.style.display='none';document.getElementById('sync-dot').className='sync-dot';}
 }
+
+async function checkPend(){
+  const r=await api('getPendientes');
+  const tot=(r.ok?r.count:0)+PENDING.length;
+  if(tot>0)document.getElementById('sync-dot').className='sync-dot pending';
+}
+
 async function syncPendientes(){
   document.getElementById('sync-lbl').textContent='Sincronizando...';
   let saved=0;
-  // sincronizar pendientes del localStorage
   if(PENDING.length>0){
-    const aEnviar=[...PENDING];
-    for(const cierre of aEnviar){
-      const res=await api('saveCierre',{data:cierre});
-      if(res.ok){
-        PENDING=PENDING.filter(p=>p.fechaCierre!==cierre.fechaCierre);
-        saved++;
-      }
+    const arr=[...PENDING];
+    for(const c of arr){
+      const r=await api('saveCierre',{data:c});
+      if(r.ok){PENDING=PENDING.filter(p=>p.fechaCierre!==c.fechaCierre);saved++;}
     }
     try{localStorage.setItem('motel_pending',JSON.stringify(PENDING));}catch(e){}
   }
-  // sincronizar pendientes del servidor
-  const res=await api('syncPendientes');
-  if(res.ok) saved+=res.saved;
+  const r=await api('syncPendientes');
+  if(r.ok)saved+=r.saved;
   document.getElementById('sync-lbl').textContent='Sincronizar pendientes';
+  updPendBadge();
   if(saved>0){
-    document.getElementById('pending-notice').style.display='none';
-    document.getElementById('sync-dot').className='sync-dot';
     toast(saved+' cierre(s) sincronizado(s)','tg');
-    await loadCierres();
-  } else {
-    toast('No había pendientes','ta');
-  }
+    const cr=await api('getCierres');
+    if(cr.ok){ALL=cr.cierres;renderCierres();renderInicio();}
+  }else toast('No había pendientes','ta');
 }
 
-// ══ CONFIG ══
-function populateCfgForm(){
-  document.getElementById('cfg-esp-base').value=CFG.prices.esp.base;
-  document.getElementById('cfg-esp-extra').value=CFG.prices.esp.extra;
-  document.getElementById('cfg-sim-base').value=CFG.prices.sim.base;
-  document.getElementById('cfg-sim-extra').value=CFG.prices.sim.extra;
+// CONFIG
+function popCfgForm(){
+  if(!CFG.prices)return;
+  if(CFG.prices.esp){document.getElementById('cfg-esp-base').value=CFG.prices.esp.base;document.getElementById('cfg-esp-extra').value=CFG.prices.esp.extra;}
+  if(CFG.prices.sim){document.getElementById('cfg-sim-base').value=CFG.prices.sim.base;document.getElementById('cfg-sim-extra').value=CFG.prices.sim.extra;}
 }
-
-function renderRoomAssign(){
-  const g=document.getElementById('room-assign-grid');g.innerHTML='';
-  const rooms=[1,2,3,4,5,9,10,11,12];
-  rooms.forEach(id=>{
+function renderRoomGrid(){
+  const g=document.getElementById('room-grid');g.innerHTML='';
+  [1,2,3,4,5,9,10,11,12].forEach(id=>{
     const cat=CFG.cats[id]||'sim';
     const el=document.createElement('div');
-    el.className='ra-cell is-'+cat;
-    el.onclick=()=>toggleCat(id);
-    el.innerHTML=`<div class="ra-num">${id}</div><div class="ra-label">${cat==='esp'?'Especial':'Simple'}</div>`;
+    el.className='ra is-'+cat;
+    el.onclick=()=>{CFG.cats[id]=CFG.cats[id]==='esp'?'sim':'esp';renderRoomGrid();};
+    el.innerHTML=`<div class="ra-n">${id}</div><div class="ra-l">${cat==='esp'?'Esp':'Sim'}</div>`;
     g.appendChild(el);
   });
 }
-function toggleCat(id){
-  CFG.cats[id]=CFG.cats[id]==='esp'?'sim':'esp';
-  renderRoomAssign();
-}
-
 function renderMenuEdit(){
   document.getElementById('menu-edit').innerHTML=(CFG.menu||[]).map((item,i)=>`
-    <div class="menu-edit-row">
-      <input class="me-inp" type="text" value="${(item.name||'').replace(/"/g,'&quot;')}" oninput="CFG.menu[${i}].name=this.value">
-      <input class="me-inp" type="number" value="${item.price||0}" oninput="CFG.menu[${i}].price=parseInt(this.value)||0">
+    <div class="menu-row">
+      <input class="inp" type="text" value="${(item.name||'').replace(/"/g,'&quot;')}" oninput="CFG.menu[${i}].name=this.value">
+      <input class="inp" type="number" value="${item.price||0}" oninput="CFG.menu[${i}].price=parseInt(this.value)||0">
       <button class="me-del" onclick="delMI(${i})">✕</button>
     </div>`).join('');
 }
 function addMI(){if(!CFG.menu)CFG.menu=[];CFG.menu.push({name:'Nuevo ítem',price:0});renderMenuEdit();}
 function delMI(i){CFG.menu.splice(i,1);renderMenuEdit();}
-
 async function saveCfg(){
-  // leer valores frescos de los inputs — no depende de CFG.prices
-  if(!CFG.prices) CFG.prices={esp:{base:0,extra:0},sim:{base:0,extra:0}};
-  if(!CFG.prices.esp) CFG.prices.esp={base:0,extra:0};
-  if(!CFG.prices.sim) CFG.prices.sim={base:0,extra:0};
+  if(!CFG.prices)CFG.prices={esp:{base:0,extra:0},sim:{base:0,extra:0}};
+  if(!CFG.prices.esp)CFG.prices.esp={base:0,extra:0};
+  if(!CFG.prices.sim)CFG.prices.sim={base:0,extra:0};
   CFG.prices.esp.base=parseInt(document.getElementById('cfg-esp-base').value)||0;
   CFG.prices.esp.extra=parseInt(document.getElementById('cfg-esp-extra').value)||0;
   CFG.prices.sim.base=parseInt(document.getElementById('cfg-sim-base').value)||0;
   CFG.prices.sim.extra=parseInt(document.getElementById('cfg-sim-extra').value)||0;
-  if(!CFG.cats) CFG.cats={1:'sim',2:'sim',3:'esp',4:'esp',5:'esp',9:'esp',10:'esp',11:'sim',12:'sim'};
-  if(!CFG.menu) CFG.menu=[];
-
-  const res=await api('saveConfig',{data:{
-    prices:CFG.prices,cats:CFG.cats,menu:CFG.menu
-  }});
-  if(res.ok){
-    const ok=document.getElementById('save-ok');
-    ok.classList.add('show');setTimeout(()=>ok.classList.remove('show'),3000);
-    toast('Configuración guardada — el panel la leerá en el próximo inicio','tg');
-  } else {
-    toast('Error al guardar: '+res.error,'ty');
-  }
+  if(!CFG.cats)CFG.cats={};if(!CFG.menu)CFG.menu=[];
+  const r=await api('saveConfig',{data:{prices:CFG.prices,cats:CFG.cats,menu:CFG.menu}});
+  if(r.ok){const ok=document.getElementById('save-ok');ok.classList.add('show');setTimeout(()=>ok.classList.remove('show'),3000);toast('Configuración guardada','tg');}
+  else toast('Error: '+r.error,'ty');
 }
 
-// ══ HELPERS ══
-let _tt;
-function toast(msg,cls='tg'){const el=document.getElementById('toast');el.textContent=msg;el.className='toast '+cls+' show';clearTimeout(_tt);_tt=setTimeout(()=>{el.className='toast';},3200);}
+// MODAL
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.getElementById('modal-edit').addEventListener('click',function(e){if(e.target===this)closeModal('modal-edit');});
+
+// TOAST
+function toast(msg,type='ta'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast show '+(type||'');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
 </script>
 </body>
 </html>
