@@ -260,6 +260,114 @@ header{
 
     <!-- Cierres agrupados por mes -->
     <div id="meses-container"><div class="empty-state">Cargando datos...</div></div>
+
+    <!-- ═══ RESUMEN MES ═══ -->
+    <div style="margin-top:32px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--acc2);" id="mes-titulo">— RESUMEN DEL MES —</div>
+        <select id="mes-select" class="cfg-inp" style="width:170px;" onchange="renderMes()"></select>
+      </div>
+
+      <!-- CAJA -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;">
+        <div class="rcard" style="border-color:rgba(200,184,154,.3);">
+          <div class="rl">CAJA TOTAL</div>
+          <div class="rv" id="m-total" style="color:var(--acc);">$0</div>
+          <div class="rs" id="m-total-sub">ingresos del mes</div>
+        </div>
+        <div class="rcard" style="border-color:rgba(92,184,138,.3);">
+          <div class="rl">💵 EFECTIVO EN CAJA</div>
+          <div class="rv" id="m-efectivo" style="color:var(--cash);">$0</div>
+          <div class="rs">efectivo − egresos efectivo</div>
+        </div>
+        <div class="rcard" style="border-color:rgba(112,144,192,.3);">
+          <div class="rl">🏦 SALDO BANCO</div>
+          <div class="rv" id="m-banco" style="color:var(--transf);">$0</div>
+          <div class="rs">transferencias − egresos banco</div>
+        </div>
+      </div>
+
+      <!-- PROMEDIOS -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
+        <div class="rcard">
+          <div class="rl">DÍAS CON DATOS</div>
+          <div class="rv" id="m-dias" style="color:var(--text);">0</div>
+        </div>
+        <div class="rcard">
+          <div class="rl">CLIENTES TOTAL</div>
+          <div class="rv" id="m-clientes" style="color:var(--acc);">0</div>
+        </div>
+        <div class="rcard">
+          <div class="rl">INGRESO PROM / DÍA</div>
+          <div class="rv" id="m-prom-dia" style="color:var(--cash);">$0</div>
+        </div>
+        <div class="rcard">
+          <div class="rl">CLIENTES PROM / DÍA</div>
+          <div class="rv" id="m-prom-cli" style="color:var(--acc2);">0</div>
+        </div>
+      </div>
+
+      <!-- PROYECCION -->
+      <div style="background:var(--s2);border:1px solid var(--acc-border);border-radius:12px;padding:14px 18px;margin-bottom:16px;display:flex;gap:28px;flex-wrap:wrap;align-items:center;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--acc);">📈 PROYECCIÓN</div>
+        <div><div style="font-size:10px;color:var(--muted);">Días restantes</div><div style="font-family:'DM Mono',monospace;font-size:15px;" id="m-dias-rest">—</div></div>
+        <div><div style="font-size:10px;color:var(--muted);">Proyección ingresos mes</div><div style="font-family:'DM Mono',monospace;font-size:15px;color:var(--cash);" id="m-proy">$0</div></div>
+        <div><div style="font-size:10px;color:var(--muted);">Proyección clientes mes</div><div style="font-family:'DM Mono',monospace;font-size:15px;color:var(--acc2);" id="m-proy-cli">0</div></div>
+        <div><div style="font-size:10px;color:var(--muted);">Promedio por cliente</div><div style="font-family:'DM Mono',monospace;font-size:15px;color:var(--text);" id="m-prom-cliente">$0</div></div>
+      </div>
+
+      <!-- EGRESOS -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+        <div class="cfg-section" style="margin-bottom:0;">
+          <div class="cfg-section-title" style="margin-bottom:10px;">Egresos del Panel (automáticos)</div>
+          <div id="m-egr-panel" style="max-height:160px;overflow-y:auto;">
+            <div style="font-size:12px;color:var(--muted);text-align:center;padding:10px;">Sin egresos en el período</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid var(--border);margin-top:6px;font-size:13px;">
+            <span style="color:var(--muted);">Total egresos Panel</span>
+            <span style="font-family:'DM Mono',monospace;color:var(--red);" id="m-egr-panel-total">$0</span>
+          </div>
+        </div>
+        <div class="cfg-section" style="margin-bottom:0;">
+          <div class="cfg-section-title" style="margin-bottom:10px;">Mis Egresos</div>
+          <div style="display:grid;grid-template-columns:1fr 90px 80px 32px;gap:6px;margin-bottom:8px;">
+            <input type="text" id="negr-concepto" class="me-inp" placeholder="Concepto">
+            <input type="number" id="negr-monto" class="me-inp" placeholder="Monto">
+            <select id="negr-origen" class="me-inp">
+              <option value="efectivo">💵 Efectivo</option>
+              <option value="banco">🏦 Banco</option>
+            </select>
+            <button class="btn-acc" onclick="addMisEgr()" style="padding:0;border-radius:6px;font-size:18px;line-height:1;">+</button>
+          </div>
+          <div id="m-egr-manual" style="max-height:120px;overflow-y:auto;">
+            <div style="font-size:12px;color:var(--muted);text-align:center;padding:10px;">Sin egresos cargados</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid var(--border);margin-top:6px;font-size:13px;">
+            <span style="color:var(--muted);">Total mis egresos</span>
+            <span style="font-family:'DM Mono',monospace;color:var(--red);" id="m-egr-manual-total">$0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABLA DIARIA -->
+      <div class="cfg-section" style="margin-bottom:0;">
+        <div class="cfg-section-title">Detalle Diario</div>
+        <div style="overflow-x:auto;">
+          <table class="cierre-table">
+            <thead><tr>
+              <th>Día</th>
+              <th>Mañana $</th><th>cli</th>
+              <th>Tarde $</th><th>cli</th>
+              <th>Noche $</th><th>cli</th>
+              <th style="color:var(--acc);">Total día</th>
+              <th style="color:var(--acc2);">Clientes</th>
+            </tr></thead>
+            <tbody id="m-tabla-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- fin resumen mes -->
   </div>
 
   <!-- CONFIG -->
@@ -302,6 +410,9 @@ header{
     </div>
 
   </div>
+
+
+
 </div>
 
 <div class="toast" id="toast"></div>
@@ -392,9 +503,213 @@ async function loadCierres(){
   if(res.ok){
     ALL_CIERRES = res.cierres;
     renderBalance();
+    initMesSelect();
+    renderMes();
   } else {
     document.getElementById('meses-container').innerHTML='<div class="empty-state">Error al cargar datos. Verificá la conexión.</div>';
   }
+}
+
+// ══ MIS EGRESOS (localStorage por mes) ══
+function getMisEgrKey(mesKey){ return 'motel_egr_'+mesKey; }
+function getMisEgr(mesKey){
+  try{ const d=localStorage.getItem(getMisEgrKey(mesKey)); return d?JSON.parse(d):[]; }catch(e){return [];}
+}
+function saveMisEgr(mesKey,arr){
+  try{localStorage.setItem(getMisEgrKey(mesKey),JSON.stringify(arr));}catch(e){}
+}
+
+function addMisEgr(){
+  const concepto=document.getElementById('negr-concepto').value.trim();
+  const monto=parseInt(document.getElementById('negr-monto').value)||0;
+  const origen=document.getElementById('negr-origen').value;
+  if(!concepto||!monto){toast('Completá concepto y monto','ty');return;}
+  const mesKey=document.getElementById('mes-select').value;
+  const arr=getMisEgr(mesKey);
+  arr.push({concepto,monto,origen,fecha:new Date().toISOString().slice(0,10)});
+  saveMisEgr(mesKey,arr);
+  document.getElementById('negr-concepto').value='';
+  document.getElementById('negr-monto').value='';
+  renderMes();
+  toast('Egreso guardado','tg');
+}
+
+function delMisEgr(mesKey,idx){
+  const arr=getMisEgr(mesKey);
+  arr.splice(idx,1);
+  saveMisEgr(mesKey,arr);
+  renderMes();
+}
+
+function initMesSelect(){
+  const sel=document.getElementById('mes-select');
+  // recolectar meses disponibles de cierres
+  const meses=new Set();
+  const now=new Date();
+  // siempre incluir mes actual
+  meses.add(now.toISOString().slice(0,7));
+  ALL_CIERRES.forEach(c=>{
+    const f=(c['Fecha']||'').slice(0,7);
+    if(f) meses.add(f);
+  });
+  const sorted=[...meses].sort().reverse();
+  sel.innerHTML=sorted.map(m=>{
+    const [y,mo]=m.split('-');
+    const label=new Date(y,parseInt(mo)-1,1).toLocaleDateString('es-AR',{month:'long',year:'numeric'}).toUpperCase();
+    return `<option value="${m}">${label}</option>`;
+  }).join('');
+}
+
+function renderMes(){
+  const mesKey=document.getElementById('mes-select').value;
+  if(!mesKey) return;
+  const [y,mo]=mesKey.split('-');
+  const year=parseInt(y), month=parseInt(mo);
+  const diasEnMes=new Date(year,month,0).getDate();
+  const hoy=new Date();
+  const esMesActual=(hoy.getFullYear()===year&&hoy.getMonth()+1===month);
+  const diaActual=esMesActual?hoy.getDate():diasEnMes;
+
+  // título
+  document.getElementById('mes-titulo').textContent=
+    '— '+new Date(year,month-1,1).toLocaleDateString('es-AR',{month:'long',year:'numeric'}).toUpperCase()+' —';
+
+  // filtrar cierres del mes
+  const cierres=ALL_CIERRES.filter(c=>(c['Fecha']||'').slice(0,7)===mesKey);
+
+  // totales caja
+  let totalEf=0,totalBanco=0,totalClientes=0;
+  cierres.forEach(c=>{
+    totalEf+=Number(c['Efectivo'])||0;
+    totalBanco+=Number(c['Transferencia'])||0;
+    totalClientes+=Number(c['Clientes'])||0;
+  });
+  const totalIngreso=totalEf+totalBanco;
+
+  // egresos del panel (del detalle de egresos de cada cierre)
+  let egrPanelArr=[];
+  let egrPanelTotal=0;
+  cierres.forEach(c=>{
+    const egrs=c['Detalle Egresos'];
+    if(Array.isArray(egrs)){
+      egrs.forEach(e=>{
+        egrPanelArr.push({concepto:e.concepto,monto:e.monto,fecha:(c['Fecha']||'').slice(0,10)});
+        egrPanelTotal+=Number(e.monto)||0;
+      });
+    }
+  });
+
+  // mis egresos
+  const misEgrs=getMisEgr(mesKey);
+  let misEgrEf=0,misEgrBanco=0,misEgrTotal=0;
+  misEgrs.forEach(e=>{
+    misEgrTotal+=e.monto;
+    if(e.origen==='efectivo') misEgrEf+=e.monto;
+    else misEgrBanco+=e.monto;
+  });
+
+  // caja neta
+  const efNeto=totalEf-egrPanelTotal-misEgrEf;
+  const bancoNeto=totalBanco-misEgrBanco;
+
+  // promedios
+  const diasConDatos=new Set(cierres.map(c=>(c['Fecha']||'').slice(0,10))).size;
+  const promDia=diasConDatos>0?Math.round(totalIngreso/diasConDatos):0;
+  const promCli=diasConDatos>0?(totalClientes/diasConDatos).toFixed(1):0;
+  const promCliente=totalClientes>0?Math.round(totalIngreso/totalClientes):0;
+
+  // proyección solo si es mes actual
+  const diasRestantes=esMesActual?diasEnMes-diaActual:0;
+  const proyIngreso=esMesActual&&diasConDatos>0?Math.round(totalIngreso+(promDia*diasRestantes)):totalIngreso;
+  const proyCli=esMesActual&&diasConDatos>0?Math.round(totalClientes+(parseFloat(promCli)*diasRestantes)):totalClientes;
+
+  // render caja
+  document.getElementById('m-total').textContent='$'+totalIngreso.toLocaleString('es-AR');
+  document.getElementById('m-total-sub').textContent=cierres.length+' cierres registrados';
+  document.getElementById('m-efectivo').textContent='$'+efNeto.toLocaleString('es-AR');
+  document.getElementById('m-banco').textContent='$'+bancoNeto.toLocaleString('es-AR');
+
+  // promedios
+  document.getElementById('m-dias').textContent=diasConDatos;
+  document.getElementById('m-clientes').textContent=totalClientes;
+  document.getElementById('m-prom-dia').textContent='$'+promDia.toLocaleString('es-AR');
+  document.getElementById('m-prom-cli').textContent=promCli;
+
+  // proyección
+  document.getElementById('m-dias-rest').textContent=esMesActual?diasRestantes+' días':'mes cerrado';
+  document.getElementById('m-proy').textContent='$'+proyIngreso.toLocaleString('es-AR');
+  document.getElementById('m-proy-cli').textContent=proyCli;
+  document.getElementById('m-prom-cliente').textContent='$'+promCliente.toLocaleString('es-AR');
+
+  // egresos panel
+  const egrPanelEl=document.getElementById('m-egr-panel');
+  if(egrPanelArr.length===0){
+    egrPanelEl.innerHTML='<div style="font-size:12px;color:var(--muted);text-align:center;padding:10px;">Sin egresos en el período</div>';
+  } else {
+    egrPanelEl.innerHTML=egrPanelArr.map(e=>`
+      <div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid var(--border);">
+        <span style="color:var(--text);">${e.fecha} — ${e.concepto}</span>
+        <span style="font-family:'DM Mono',monospace;color:var(--red);">−$${Number(e.monto).toLocaleString('es-AR')}</span>
+      </div>`).join('');
+  }
+  document.getElementById('m-egr-panel-total').textContent='−$'+egrPanelTotal.toLocaleString('es-AR');
+
+  // mis egresos
+  const misEgrEl=document.getElementById('m-egr-manual');
+  if(misEgrs.length===0){
+    misEgrEl.innerHTML='<div style="font-size:12px;color:var(--muted);text-align:center;padding:10px;">Sin egresos cargados</div>';
+  } else {
+    misEgrEl.innerHTML=misEgrs.map((e,i)=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:4px 0;border-bottom:1px solid var(--border);">
+        <span>${e.fecha} — ${e.concepto} <span style="font-size:10px;color:var(--muted);">(${e.origen==='efectivo'?'💵':'🏦'})</span></span>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span style="font-family:'DM Mono',monospace;color:var(--red);">−$${e.monto.toLocaleString('es-AR')}</span>
+          <button onclick="delMisEgr('${mesKey}',${i})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;">✕</button>
+        </div>
+      </div>`).join('');
+  }
+  document.getElementById('m-egr-manual-total').textContent='−$'+misEgrTotal.toLocaleString('es-AR');
+
+  // tabla diaria
+  const TURNOS=['Mañana','Tarde','Noche'];
+  // mapear cierres por fecha+turno
+  const mapa={};
+  cierres.forEach(c=>{
+    const fecha=(c['Fecha']||'').slice(0,10);
+    const turno=(c['Turno']||'').toLowerCase();
+    const t=TURNOS.find(t=>turno.includes(t.toLowerCase()))||c['Turno']||'';
+    if(!mapa[fecha]) mapa[fecha]={};
+    mapa[fecha][t]={monto:(Number(c['Efectivo'])||0)+(Number(c['Transferencia'])||0),clientes:Number(c['Clientes'])||0};
+  });
+
+  // generar filas para cada día del mes
+  const tbody=document.getElementById('m-tabla-body');
+  let rows='';
+  const diasSemana=['dom','lun','mar','mié','jue','vie','sáb'];
+  for(let d=1;d<=diasEnMes;d++){
+    const fecha=`${y}-${mo.padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const esDia=mapa[fecha]||{};
+    const man=esDia['Mañana']||null;
+    const tar=esDia['Tarde']||null;
+    const noc=esDia['Noche']||null;
+    const totalDia=(man?man.monto:0)+(tar?tar.monto:0)+(noc?noc.monto:0);
+    const clientesDia=(man?man.clientes:0)+(tar?tar.clientes:0)+(noc?noc.clientes:0);
+    const esHoy=esMesActual&&d===diaActual;
+    const diaSem=diasSemana[new Date(year,month-1,d).getDay()];
+    const hayDatos=man||tar||noc;
+    rows+=`<tr style="${esHoy?'background:rgba(200,184,154,.06);':''}${!hayDatos&&d<diaActual?'opacity:0.4;':''}">
+      <td class="td-mono" style="color:var(--muted);white-space:nowrap;">${diaSem} ${d}</td>
+      <td class="td-mono" style="color:var(--cash);">${man?'$'+man.monto.toLocaleString('es-AR'):'—'}</td>
+      <td class="td-mono">${man?man.clientes:'—'}</td>
+      <td class="td-mono" style="color:var(--cash);">${tar?'$'+tar.monto.toLocaleString('es-AR'):'—'}</td>
+      <td class="td-mono">${tar?tar.clientes:'—'}</td>
+      <td class="td-mono" style="color:var(--cash);">${noc?'$'+noc.monto.toLocaleString('es-AR'):'—'}</td>
+      <td class="td-mono">${noc?noc.clientes:'—'}</td>
+      <td class="td-mono" style="color:var(--acc);font-weight:600;">${totalDia>0?'$'+totalDia.toLocaleString('es-AR'):'—'}</td>
+      <td class="td-mono" style="color:var(--acc2);">${clientesDia>0?clientesDia:'—'}</td>
+    </tr>`;
+  }
+  tbody.innerHTML=rows;
 }
 
 // ══ TABS ══
