@@ -399,7 +399,7 @@ html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'DM
             <div class="pg-title">Egresos</div>
             <div class="pg-sub">Egresos del Panel (editables), tus egresos manuales, y resumen por categoría.</div>
           </div>
-          <select class="msel" id="e-msel" onchange="renderEgresos()"></select>
+          <select class="msel" id="e-msel" onchange="delete MIS_EGR_CACHE[this.value];renderEgresos()"></select>
         </div>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;">
@@ -615,11 +615,20 @@ async function initApp(){
 }
 
 // NAV
-function goTo(p){
-  document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
-  document.querySelectorAll('.sb-item').forEach(e=>e.classList.remove('active'));
-  document.getElementById('page-'+p).classList.add('active');
-  document.getElementById('nav-'+p).classList.add('active');
+async function goTo(p){
+  document.querySelectorAll(".page").forEach(e=>e.classList.remove("active"));
+  document.querySelectorAll(".sb-item").forEach(e=>e.classList.remove("active"));
+  document.getElementById("page-"+p).classList.add("active");
+  document.getElementById("nav-"+p).classList.add("active");
+  // Recargar datos frescos del servidor al navegar
+  if(p==='cierres'||p==='inicio'||p==='egresos'||p==='historial'){
+    const r=await api('getCierres');
+    if(r.ok){ALL=r.cierres;renderCierres();renderInicio();renderHistorial();}
+  }
+  if(p==='egresos'){
+    const mk=document.getElementById('e-msel').value;
+    if(mk){delete MIS_EGR_CACHE[mk];await loadMisEgr(mk);renderEgresos();}
+  }
 }
 
 // MES SELECTS
@@ -993,15 +1002,17 @@ async function renderEgresos(){
 function toggleEgrEdit(id){
   document.getElementById(id).classList.toggle('open');
 }
-function saveEgrPanel(ci,ei,i){
+async function saveEgrPanel(ci,ei,i){
   const c=ALL[ci];if(!c)return;
   if(!Array.isArray(c['Detalle Egresos']))return;
   const e=c['Detalle Egresos'][ei];if(!e)return;
   e.concepto=document.getElementById('ep-inp-con-'+i).value;
   e.monto=parseInt(document.getElementById('ep-inp-mon-'+i).value)||0;
   e.categoria=document.getElementById('ep-inp-cat-'+i).value;
-  // actualizar total egresos del cierre
   c['Egresos']=c['Detalle Egresos'].reduce((a,x)=>a+(Number(x.monto)||0),0);
+  // Guardar cierre actualizado en Sheet
+  const r=await api('updateCierre',{data:c});
+  if(!r.ok){toast('Error al guardar: '+(r.error||''),'ty');return;}
   toggleEgrEdit('ep-form-'+i);
   renderEgresos();renderInicio();
   toast('Egreso actualizado','tg');
