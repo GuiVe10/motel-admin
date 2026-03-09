@@ -574,12 +574,11 @@ document.addEventListener('keydown',e=>{
   }
 });
 
-// API
+// API — usa GET con body en query string para evitar el redirect POST→GET de Apps Script
 async function api(action,data={}){
   try{
-    const r=await fetch(SCRIPT_URL,{method:'POST',redirect:'follow',
-      headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body:JSON.stringify({action,...data})});
+    const body=encodeURIComponent(JSON.stringify({action,...data}));
+    const r=await fetch(SCRIPT_URL+'?body='+body,{redirect:'follow'});
     return await r.json();
   }catch(e){return{ok:false,error:e.toString()};}
 }
