@@ -605,6 +605,9 @@ async function initApp(){
   if(r.ok)ALL=r.cierres;
 
   initMsels();
+  // precargar egresos del mes actual
+  const mkNow=new Date().toISOString().slice(0,7);
+  await loadMisEgr(mkNow);
   renderInicio();
   renderCierres();
   renderEgresos();
@@ -818,28 +821,41 @@ function saveEdit(){
 }
 
 // EGRESOS
-function getMisEgrK(mk){return'motel_egr_'+mk;}
-function getMisEgr(mk){try{const d=localStorage.getItem(getMisEgrK(mk));return d?JSON.parse(d):[]}catch(e){return[];}}
-function saveMisEgr(mk,arr){try{localStorage.setItem(getMisEgrK(mk),JSON.stringify(arr));}catch(e){}}
+// MIS EGRESOS — guardados en Sheet (hoja Egresos)
+let MIS_EGR_CACHE={};// cache local por mes: {mk: [...]}
 
-function addMisEgr(){
+async function loadMisEgr(mk){
+  const r=await api('getMisEgresos',{mes:mk});
+  if(r.ok){MIS_EGR_CACHE[mk]=r.egresos;}
+  return MIS_EGR_CACHE[mk]||[];
+}
+function getMisEgr(mk){return MIS_EGR_CACHE[mk]||[];}
+
+async function addMisEgr(){
   const con=document.getElementById('negr-concepto').value.trim();
   const mon=parseInt(document.getElementById('negr-monto').value)||0;
   const cat=document.getElementById('negr-cat').value;
   const ori=document.getElementById('negr-origen').value;
   if(!con||!mon){toast('Completá concepto y monto','ty');return;}
   const mk=document.getElementById('e-msel').value;
-  const arr=getMisEgr(mk);
-  arr.push({concepto:con,monto:mon,categoria:cat,origen:ori,fecha:new Date().toISOString().slice(0,10)});
-  saveMisEgr(mk,arr);
+  const egr={concepto:con,monto:mon,categoria:cat,origen:ori,fecha:new Date().toISOString().slice(0,10),mes:mk};
+  const r=await api('addMisEgreso',{egreso:egr});
+  if(!r.ok){toast('Error al guardar: '+r.error,'ty');return;}
+  if(!MIS_EGR_CACHE[mk])MIS_EGR_CACHE[mk]=[];
+  MIS_EGR_CACHE[mk].push(egr);
   document.getElementById('negr-concepto').value='';
   document.getElementById('negr-monto').value='';
   renderEgresos();renderInicio();
   toast('Egreso guardado','tg');
 }
 
-function delMisEgr(mk,idx){
-  const arr=getMisEgr(mk);arr.splice(idx,1);saveMisEgr(mk,arr);
+async function delMisEgr(mk,idx){
+  const arr=getMisEgr(mk);
+  const egr=arr[idx];
+  if(!egr)return;
+  const r=await api('delMisEgreso',{mes:mk,idx});
+  if(!r.ok){toast('Error al eliminar','ty');return;}
+  arr.splice(idx,1);
   renderEgresos();renderInicio();
 }
 
@@ -859,9 +875,11 @@ function inferCat(concepto){
   return'Otros';
 }
 
-function renderEgresos(){
+async function renderEgresos(){
   const mk=document.getElementById('e-msel').value;
   if(!mk)return;
+  // cargar del servidor si no está en caché
+  if(!MIS_EGR_CACHE[mk])await loadMisEgr(mk);
   const cierres=ALL.filter(c=>(c['Fecha']||'').slice(0,7)===mk);
 
   // Panel egresos — editables inline
