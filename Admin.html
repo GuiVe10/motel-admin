@@ -337,6 +337,16 @@ html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'DM
           </div>
         </div>
 
+        <!-- ALJIBE -->
+        <div id="i-aljibe-box" style="display:none;background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:14px 20px;margin-bottom:14px;display:flex;align-items:center;gap:16px;">
+          <div style="font-size:32px;" id="i-alj-icon">💧</div>
+          <div>
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);">💧 Aljibe — último reporte</div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;margin-top:2px;" id="i-alj-texto">—</div>
+            <div style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:2px;" id="i-alj-sub">—</div>
+          </div>
+        </div>
+
         <div class="pbar" id="i-pbar">
           <span class="plbl">📈 Proyección</span>
           <div class="pi"><div class="pl">Días restantes</div><div class="pv" id="i-drest">—</div></div>
@@ -399,7 +409,7 @@ html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'DM
             <div class="pg-title">Egresos</div>
             <div class="pg-sub">Egresos del Panel (editables), tus egresos manuales, y resumen por categoría.</div>
           </div>
-          <select class="msel" id="e-msel" onchange="delete MIS_EGR_CACHE[this.value];renderEgresos()"></select>
+          <select class="msel" id="e-msel" onchange="renderEgresos()"></select>
         </div>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;">
@@ -574,11 +584,12 @@ document.addEventListener('keydown',e=>{
   }
 });
 
-// API — usa GET con body en query string para evitar el redirect POST→GET de Apps Script
+// API
 async function api(action,data={}){
   try{
-    const body=encodeURIComponent(JSON.stringify({action,...data}));
-    const r=await fetch(SCRIPT_URL+'?body='+body,{redirect:'follow'});
+    const r=await fetch(SCRIPT_URL,{method:'POST',redirect:'follow',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({action,...data})});
     return await r.json();
   }catch(e){return{ok:false,error:e.toString()};}
 }
@@ -615,20 +626,11 @@ async function initApp(){
 }
 
 // NAV
-async function goTo(p){
-  document.querySelectorAll(".page").forEach(e=>e.classList.remove("active"));
-  document.querySelectorAll(".sb-item").forEach(e=>e.classList.remove("active"));
-  document.getElementById("page-"+p).classList.add("active");
-  document.getElementById("nav-"+p).classList.add("active");
-  // Recargar datos frescos del servidor al navegar
-  if(p==='cierres'||p==='inicio'||p==='egresos'||p==='historial'){
-    const r=await api('getCierres');
-    if(r.ok){ALL=r.cierres;renderCierres();renderInicio();renderHistorial();}
-  }
-  if(p==='egresos'){
-    const mk=document.getElementById('e-msel').value;
-    if(mk){delete MIS_EGR_CACHE[mk];await loadMisEgr(mk);renderEgresos();}
-  }
+function goTo(p){
+  document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(e=>e.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.getElementById('nav-'+p).classList.add('active');
 }
 
 // MES SELECTS
@@ -727,6 +729,46 @@ function renderInicio(){
     </tr>`;
   }
   document.getElementById('i-tbody').innerHTML=rows;
+  renderAljibe();
+}
+
+function renderAljibe(){
+  // Buscar el último cierre que tenga aljibe reportado (ALL está ordenado más nuevo primero)
+  const conAljibe = ALL.find(c => c['Aljibe'] && c['Aljibe'] !== '');
+  const box = document.getElementById('i-aljibe-box');
+  if(!conAljibe){
+    box.style.display='none';
+    return;
+  }
+  box.style.display='flex';
+  const val = (conAljibe['Aljibe'] || '').toLowerCase();
+  const iconEl = document.getElementById('i-alj-icon');
+  const textoEl = document.getElementById('i-alj-texto');
+  const subEl = document.getElementById('i-alj-sub');
+  const fecha = (conAljibe['Fecha'] || '').slice(0,10);
+  const op = conAljibe['Operador'] || '—';
+  const turno = conAljibe['Turno'] || '';
+  subEl.textContent = `${fecha} — ${op} (${turno})`;
+  if(val === 'lleno'){
+    iconEl.textContent = '🟢';
+    textoEl.textContent = 'LLENO';
+    textoEl.style.color = 'var(--green)';
+    box.style.borderColor = 'rgba(76,175,122,.4)';
+  } else if(val === 'medio'){
+    iconEl.textContent = '🟡';
+    textoEl.textContent = 'MEDIO';
+    textoEl.style.color = 'var(--yellow)';
+    box.style.borderColor = 'rgba(212,160,48,.4)';
+  } else if(val === 'vacio'){
+    iconEl.textContent = '🔴';
+    textoEl.textContent = 'VACÍO — PEDIR AGUA';
+    textoEl.style.color = 'var(--red)';
+    box.style.borderColor = 'rgba(217,95,95,.4)';
+  } else {
+    iconEl.textContent = '💧';
+    textoEl.textContent = val.toUpperCase();
+    textoEl.style.color = 'var(--muted2)';
+  }
 }
 
 function cerrarMes(){
@@ -1002,17 +1044,15 @@ async function renderEgresos(){
 function toggleEgrEdit(id){
   document.getElementById(id).classList.toggle('open');
 }
-async function saveEgrPanel(ci,ei,i){
+function saveEgrPanel(ci,ei,i){
   const c=ALL[ci];if(!c)return;
   if(!Array.isArray(c['Detalle Egresos']))return;
   const e=c['Detalle Egresos'][ei];if(!e)return;
   e.concepto=document.getElementById('ep-inp-con-'+i).value;
   e.monto=parseInt(document.getElementById('ep-inp-mon-'+i).value)||0;
   e.categoria=document.getElementById('ep-inp-cat-'+i).value;
+  // actualizar total egresos del cierre
   c['Egresos']=c['Detalle Egresos'].reduce((a,x)=>a+(Number(x.monto)||0),0);
-  // Guardar cierre actualizado en Sheet
-  const r=await api('updateCierre',{data:c});
-  if(!r.ok){toast('Error al guardar: '+(r.error||''),'ty');return;}
   toggleEgrEdit('ep-form-'+i);
   renderEgresos();renderInicio();
   toast('Egreso actualizado','tg');
