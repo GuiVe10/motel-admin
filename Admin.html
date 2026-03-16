@@ -705,7 +705,9 @@ function renderInicio(){
     const tr=(c['Turno']||'').toLowerCase();
     const t=tr.includes('ma')?'Mañana':tr.includes('tard')?'Tarde':'Noche';
     if(!mapa[fecha])mapa[fecha]={};
-    mapa[fecha][t]={m:(Number(c['Efectivo'])||0)+(Number(c['Transferencia'])||0),c:Number(c['Clientes'])||0};
+    if(!mapa[fecha][t])mapa[fecha][t]={m:0,c:0};
+    mapa[fecha][t].m+=(Number(c['Efectivo'])||0)+(Number(c['Transferencia'])||0);
+    mapa[fecha][t].c+=Number(c['Clientes'])||0;
   });
 
   const DS=['dom','lun','mar','mié','jue','vie','sáb'];
