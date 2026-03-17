@@ -631,14 +631,19 @@ async function goTo(p){
   document.querySelectorAll('.sb-item').forEach(e=>e.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
   document.getElementById('nav-'+p).classList.add('active');
-  // recargar cierres frescos del Sheet al navegar
+  await recargarTodo();
+  if(p==='cierres')renderCierres();
+  if(p==='inicio')renderInicio();
+  if(p==='egresos')renderEgresos();
+  if(p==='historial')renderHistorial();
+}
+
+async function recargarTodo(){
+  MIS_EGR_CACHE={};
   const r=await api('getCierres');
-  if(r.ok){ALL=r.cierres;renderCierres();renderInicio();renderHistorial();}
-  if(p==='egresos'){
-    const mk=document.getElementById('e-msel').value;
-    if(mk){delete MIS_EGR_CACHE[mk];await loadMisEgr(mk);}
-    renderEgresos();
-  }
+  if(r.ok)ALL=r.cierres;
+  const mk=document.getElementById('e-msel')?document.getElementById('e-msel').value:'';
+  if(mk)await loadMisEgr(mk);
 }
 
 // MES SELECTS
@@ -901,10 +906,9 @@ async function addMisEgr(){
   const egr={concepto:con,monto:mon,categoria:cat,origen:ori,fecha:new Date().toISOString().slice(0,10),mes:mk};
   const r=await api('addMisEgreso',{egreso:egr});
   if(!r.ok){toast('Error al guardar: '+r.error,'ty');return;}
-  if(!MIS_EGR_CACHE[mk])MIS_EGR_CACHE[mk]=[];
-  MIS_EGR_CACHE[mk].push(egr);
   document.getElementById('negr-concepto').value='';
   document.getElementById('negr-monto').value='';
+  await recargarTodo();
   renderEgresos();renderInicio();
   toast('Egreso guardado','tg');
 }
@@ -915,7 +919,7 @@ async function delMisEgr(mk,idx){
   if(!egr)return;
   const r=await api('delMisEgreso',{mes:mk,idx});
   if(!r.ok){toast('Error al eliminar','ty');return;}
-  arr.splice(idx,1);
+  await recargarTodo();
   renderEgresos();renderInicio();
 }
 
@@ -938,8 +942,9 @@ function inferCat(concepto){
 async function renderEgresos(){
   const mk=document.getElementById('e-msel').value;
   if(!mk)return;
-  // cargar del servidor si no está en caché
-  if(!MIS_EGR_CACHE[mk])await loadMisEgr(mk);
+  // siempre leer del Sheet
+  delete MIS_EGR_CACHE[mk];
+  await loadMisEgr(mk);
   const cierres=ALL.filter(c=>(c['Fecha']||'').slice(0,7)===mk);
 
   // Panel egresos — leer desde JSON del cierre en hoja Cierres
@@ -1065,6 +1070,7 @@ async function saveEgrPanel(ci,ei,i){
   const r=await api('updateCierre',{data:c});
   if(!r.ok){toast('Error al guardar: '+(r.error||''),'ty');return;}
   toggleEgrEdit('ep-form-'+i);
+  await recargarTodo();
   renderEgresos();renderInicio();
   toast('Egreso actualizado','tg');
 }
