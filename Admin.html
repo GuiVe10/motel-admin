@@ -626,11 +626,19 @@ async function initApp(){
 }
 
 // NAV
-function goTo(p){
+async function goTo(p){
   document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
   document.querySelectorAll('.sb-item').forEach(e=>e.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
   document.getElementById('nav-'+p).classList.add('active');
+  // recargar cierres frescos del Sheet al navegar
+  const r=await api('getCierres');
+  if(r.ok){ALL=r.cierres;renderCierres();renderInicio();renderHistorial();}
+  if(p==='egresos'){
+    const mk=document.getElementById('e-msel').value;
+    if(mk){delete MIS_EGR_CACHE[mk];await loadMisEgr(mk);}
+    renderEgresos();
+  }
 }
 
 // MES SELECTS
