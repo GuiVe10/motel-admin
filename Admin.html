@@ -934,35 +934,31 @@ async function renderEgresos(){
   if(!MIS_EGR_CACHE[mk])await loadMisEgr(mk);
   const cierres=ALL.filter(c=>(c['Fecha']||'').slice(0,7)===mk);
 
-  // Panel egresos — editables inline
-  let panItems=[],panTot=0;
-  cierres.forEach((c,ci)=>{
-    const eg=c['Detalle Egresos'];
-    if(Array.isArray(eg))eg.forEach((e,ei)=>{
-      panItems.push({con:e.concepto,mon:Number(e.monto)||0,cat:e.categoria||inferCat(e.concepto),fecha:(c['Fecha']||'').slice(0,10),ci,ei});
-      panTot+=Number(e.monto)||0;
-    });
-  });
+  // Panel egresos — leer desde hoja Egresos con origen=='panel'
+  const todosEgr=getMisEgr(mk);
+  const panItems=todosEgr.map((e,i)=>({...e,_idx:i})).filter(e=>e.origen==='panel');
+  let panTot=panItems.reduce((a,e)=>a+e.monto,0);
   const panEl=document.getElementById('e-panel-lista');
   if(!panItems.length){panEl.innerHTML='<div class="empty">Sin egresos en el período</div>';}
   else{
     panEl.innerHTML=panItems.map((e,i)=>{
-      const catOpts=CATS.map(c=>`<option value="${c}"${c===e.cat?' selected':''}>${c}</option>`).join('');
+      const cat=e.categoria||inferCat(e.concepto);
+      const catOpts=CATS.map(c=>`<option value="${c}"${c===cat?' selected':''}>${c}</option>`).join('');
       return`<div style="padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);">
         <div class="egr-row" style="border:none;padding:3px 0;">
-          <span style="font-size:12px;">${e.fecha} — <span id="ep-con-${i}">${e.con}</span></span>
+          <span style="font-size:12px;">${e.fecha} — <span id="ep-con-${i}">${e.concepto}</span></span>
           <div style="display:flex;align-items:center;gap:6px;">
-            <span style="font-size:11px;padding:1px 6px;border-radius:10px;background:rgba(255,255,255,.06);color:var(--muted2);" id="ep-cat-${i}">${e.cat}</span>
-            <span class="tr" style="font-size:12px;">−$${e.mon.toLocaleString('es-AR')}</span>
+            <span style="font-size:11px;padding:1px 6px;border-radius:10px;background:rgba(255,255,255,.06);color:var(--muted2);" id="ep-cat-${i}">${cat}</span>
+            <span class="tr" style="font-size:12px;">−$${e.monto.toLocaleString('es-AR')}</span>
             <button class="bico" onclick="toggleEgrEdit('ep-form-${i}')" title="Editar">✏️</button>
           </div>
         </div>
         <div class="egr-edit-form" id="ep-form-${i}">
           <div style="display:grid;grid-template-columns:1fr 90px 110px 32px;gap:6px;">
-            <input class="inp" type="text" id="ep-inp-con-${i}" value="${e.con.replace(/"/g,'&quot;')}" placeholder="Concepto" style="font-size:12px;">
-            <input class="inp" type="number" id="ep-inp-mon-${i}" value="${e.mon}" style="font-size:12px;font-family:'DM Mono',monospace;">
+            <input class="inp" type="text" id="ep-inp-con-${i}" value="${e.concepto.replace(/"/g,'&quot;')}" placeholder="Concepto" style="font-size:12px;">
+            <input class="inp" type="number" id="ep-inp-mon-${i}" value="${e.monto}" style="font-size:12px;font-family:'DM Mono',monospace;">
             <select class="inp" id="ep-inp-cat-${i}" style="font-size:12px;">${catOpts}</select>
-            <button class="btn btn-p btn-sm" onclick="saveEgrPanel(${e.ci},${e.ei},${i})" style="padding:0;font-size:16px;border-radius:6px;">✓</button>
+            <button class="btn btn-p btn-sm" onclick="saveEgrPanel('${mk}',${e._idx},${i})" style="padding:0;font-size:16px;border-radius:6px;">✓</button>
           </div>
         </div>
       </div>`;
@@ -1046,15 +1042,18 @@ async function renderEgresos(){
 function toggleEgrEdit(id){
   document.getElementById(id).classList.toggle('open');
 }
-function saveEgrPanel(ci,ei,i){
-  const c=ALL[ci];if(!c)return;
-  if(!Array.isArray(c['Detalle Egresos']))return;
-  const e=c['Detalle Egresos'][ei];if(!e)return;
-  e.concepto=document.getElementById('ep-inp-con-'+i).value;
-  e.monto=parseInt(document.getElementById('ep-inp-mon-'+i).value)||0;
-  e.categoria=document.getElementById('ep-inp-cat-'+i).value;
-  // actualizar total egresos del cierre
-  c['Egresos']=c['Detalle Egresos'].reduce((a,x)=>a+(Number(x.monto)||0),0);
+async function saveEgrPanel(mk,idx,i){
+  const con=document.getElementById('ep-inp-con-'+i).value;
+  const mon=parseInt(document.getElementById('ep-inp-mon-'+i).value)||0;
+  const cat=document.getElementById('ep-inp-cat-'+i).value;
+  const r=await api('updateMisEgreso',{mes:mk,idx,egreso:{concepto:con,monto:mon,categoria:cat,origen:'panel'}});
+  if(!r.ok){toast('Error al guardar: '+(r.error||''),'ty');return;}
+  // actualizar caché local
+  if(MIS_EGR_CACHE[mk]&&MIS_EGR_CACHE[mk][idx]){
+    MIS_EGR_CACHE[mk][idx].concepto=con;
+    MIS_EGR_CACHE[mk][idx].monto=mon;
+    MIS_EGR_CACHE[mk][idx].categoria=cat;
+  }
   toggleEgrEdit('ep-form-'+i);
   renderEgresos();renderInicio();
   toast('Egreso actualizado','tg');
